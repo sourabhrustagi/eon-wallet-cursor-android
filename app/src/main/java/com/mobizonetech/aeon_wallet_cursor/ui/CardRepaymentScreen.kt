@@ -15,6 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobizonetech.aeon_wallet_cursor.data.UnlockPreferences
+import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.CardRepaymentViewModel
+import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.ViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,22 +27,27 @@ fun CardRepaymentScreen(
     onBackClick: () -> Unit,
     onPaymentComplete: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val unlockPreferences = remember { UnlockPreferences(context) }
+    val viewModelFactory = remember { ViewModelFactory(unlockPreferences) }
+    val viewModel: CardRepaymentViewModel = viewModel(factory = viewModelFactory)
+    
+    val cardData by viewModel.cardData.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    
     var selectedPaymentType by remember { mutableStateOf("minimum") }
     var customAmount by remember { mutableStateOf("") }
     var customAmountError by remember { mutableStateOf("") }
     var showSuccessScreen by remember { mutableStateOf(false) }
     
-    // Sample card data
-    val cardData = remember {
-        CardRepaymentData(
-            cardId = cardId,
-            cardName = "Credit Card",
-            currentBalance = "$2,500.00",
-            minimumPayment = "$75.00",
-            fullBalance = "$2,500.00",
-            dueDate = "Dec 25, 2024"
-        )
+    // Load card data when screen is created
+    LaunchedEffect(cardId) {
+        viewModel.loadCardData(cardId)
     }
+    
+    // Create local variable for cardData to avoid nullable issues
+    val currentCardData = cardData
     
     Scaffold(
         topBar = {
@@ -73,102 +82,130 @@ fun CardRepaymentScreen(
             }
             
             // Card Information
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+            if (isLoading) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            } else if (error != null) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
                     ) {
                         Text(
-                            text = cardData.cardName,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            text = error!!,
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.onErrorContainer
                         )
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    }
+                }
+            } else if (currentCardData != null) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
-                                text = "Current Balance",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Text(
-                                text = cardData.currentBalance,
-                                style = MaterialTheme.typography.titleMedium,
+                                text = currentCardData.cardName,
+                                style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
-                        }
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Due Date",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Text(
-                                text = cardData.dueDate,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Current Balance",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = currentCardData.currentBalance,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Due Date",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = currentCardData.dueDate,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
                         }
                     }
                 }
             }
             
-            // Payment Options
-            item {
-                Text(
-                    text = "Payment Options",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            
-            // Minimum Payment
-            item {
-                PaymentOptionCard(
-                    title = "Minimum Payment",
-                    amount = cardData.minimumPayment,
-                    description = "Avoid late fees",
-                    isSelected = selectedPaymentType == "minimum",
-                    onClick = { selectedPaymentType = "minimum" }
-                )
-            }
-            
-            // Full Payment
-            item {
-                PaymentOptionCard(
-                    title = "Full Balance",
-                    amount = cardData.fullBalance,
-                    description = "Pay off entire balance",
-                    isSelected = selectedPaymentType == "full",
-                    onClick = { selectedPaymentType = "full" }
-                )
-            }
-            
-            // Partial Payment
-            item {
-                PaymentOptionCard(
-                    title = "Custom Amount",
-                    amount = if (customAmount.isNotEmpty()) "$$customAmount" else "Enter amount",
-                    description = "Pay any amount above minimum",
-                    isSelected = selectedPaymentType == "partial",
-                    onClick = { selectedPaymentType = "partial" }
-                )
+            // Payment Options - Only show when cardData is available
+            if (currentCardData != null) {
+                item {
+                    Text(
+                        text = "Payment Options",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                // Minimum Payment
+                item {
+                    PaymentOptionCard(
+                        title = "Minimum Payment",
+                        amount = currentCardData.minimumPayment,
+                        description = "Avoid late fees",
+                        isSelected = selectedPaymentType == "minimum",
+                        onClick = { selectedPaymentType = "minimum" }
+                    )
+                }
+                
+                // Full Payment
+                item {
+                    PaymentOptionCard(
+                        title = "Full Balance",
+                        amount = currentCardData.fullBalance,
+                        description = "Pay off entire balance",
+                        isSelected = selectedPaymentType == "full",
+                        onClick = { selectedPaymentType = "full" }
+                    )
+                }
+                
+                // Partial Payment
+                item {
+                    PaymentOptionCard(
+                        title = "Custom Amount",
+                        amount = if (customAmount.isNotEmpty()) "$$customAmount" else "Enter amount",
+                        description = "Pay any amount above minimum",
+                        isSelected = selectedPaymentType == "partial",
+                        onClick = { selectedPaymentType = "partial" }
+                    )
+                }
             }
             
             // Custom Amount Input
@@ -178,13 +215,7 @@ fun CardRepaymentScreen(
                         value = customAmount,
                         onValueChange = {
                             customAmount = it
-                            customAmountError = if (it.isNotEmpty() && it.toDoubleOrNull() == null) {
-                                "Please enter a valid amount"
-                            } else if (it.isNotEmpty() && it.toDoubleOrNull() != null && it.toDouble() < 75.0) {
-                                "Amount must be at least $75.00"
-                            } else {
-                                ""
-                            }
+                            customAmountError = viewModel.validateCustomAmount(it)
                         },
                         label = { Text("Enter amount") },
                         placeholder = { Text("0.00") },
@@ -200,101 +231,100 @@ fun CardRepaymentScreen(
                 }
             }
             
-            // Payment Summary
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+            // Payment Summary - Only show when cardData is available
+            if (currentCardData != null) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text(
-                            text = "Payment Summary",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = "Payment Amount",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = when (selectedPaymentType) {
-                                    "minimum" -> cardData.minimumPayment
-                                    "full" -> cardData.fullBalance
-                                    "partial" -> if (customAmount.isNotEmpty()) "$$customAmount" else "$0.00"
-                                    else -> "$0.00"
-                                },
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Processing Fee",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "$2.50",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        
-                        Divider()
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Total Amount",
+                                text = "Payment Summary",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            Text(
-                                text = when (selectedPaymentType) {
-                                    "minimum" -> "$77.50"
-                                    "full" -> "$2,502.50"
-                                    "partial" -> if (customAmount.isNotEmpty()) "$${String.format("%.2f", customAmount.toDoubleOrNull()?.plus(2.50) ?: 0.0)}" else "$2.50"
-                                    else -> "$0.00"
-                                },
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Payment Amount",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = when (selectedPaymentType) {
+                                        "minimum" -> currentCardData.minimumPayment
+                                        "full" -> currentCardData.fullBalance
+                                        "partial" -> if (customAmount.isNotEmpty()) "$$customAmount" else "$0.00"
+                                        else -> "$0.00"
+                                    },
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Processing Fee",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "$2.50",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            
+                            Divider()
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Total Amount",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = viewModel.calculateTotalAmount(selectedPaymentType, customAmount),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
                 }
             }
             
-            // Pay Now Button
-            item {
-                Button(
-                    onClick = { showSuccessScreen = true },
-                    enabled = selectedPaymentType != "partial" || (customAmount.isNotEmpty() && customAmountError.isEmpty()),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp)
-                ) {
-                    Text(
-                        text = "Pay Now",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+            // Pay Now Button - Only show when cardData is available
+            if (currentCardData != null) {
+                item {
+                    Button(
+                        onClick = { showSuccessScreen = true },
+                        enabled = selectedPaymentType != "partial" || (customAmount.isNotEmpty() && customAmountError.isEmpty()),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(vertical = 16.dp)
+                    ) {
+                        Text(
+                            text = "Pay Now",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
             
@@ -305,15 +335,10 @@ fun CardRepaymentScreen(
     }
     
     // Payment Success Screen
-    if (showSuccessScreen) {
+    if (showSuccessScreen && currentCardData != null) {
         PaymentSuccessScreen(
             paymentType = "Card Repayment",
-            amount = when (selectedPaymentType) {
-                "minimum" -> cardData.minimumPayment
-                "full" -> cardData.fullBalance
-                "partial" -> if (customAmount.isNotEmpty()) "$$customAmount" else "$0.00"
-                else -> "$0.00"
-            },
+            amount = viewModel.calculateTotalAmount(selectedPaymentType, customAmount),
             transactionId = "TXN${System.currentTimeMillis()}",
             onBackToHome = {
                 showSuccessScreen = false

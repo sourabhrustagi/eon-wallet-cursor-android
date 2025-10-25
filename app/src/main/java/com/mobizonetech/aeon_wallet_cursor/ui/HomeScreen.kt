@@ -23,7 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobizonetech.aeon_wallet_cursor.data.UnlockPreferences
+import com.mobizonetech.aeon_wallet_cursor.domain.model.CardBrand
+import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.HomeViewModel
+import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.ViewModelFactory
 import com.mobizonetech.aeon_wallet_cursor.ui.theme.AeonwalletcursorTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +43,13 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val unlockPreferences = remember { UnlockPreferences(context) }
-    val unlockedCards by unlockPreferences.unlockedCards.collectAsState(initial = emptySet())
+    val viewModelFactory = remember { ViewModelFactory(unlockPreferences) }
+    val homeViewModel: HomeViewModel = viewModel(factory = viewModelFactory)
+    
+    val cards by homeViewModel.cards.collectAsState()
+    val unlockedCards by homeViewModel.unlockedCards.collectAsState()
+    val isLoading by homeViewModel.isLoading.collectAsState()
+    val error by homeViewModel.error.collectAsState()
     
     Scaffold(
         topBar = {
@@ -87,7 +97,8 @@ fun HomeScreen(
             item {
                 CombinedCardsSection(
                     onCardClick = { cardId -> onCardClick(cardId) },
-                    unlockedCards = unlockedCards
+                    unlockedCards = unlockedCards,
+                    homeViewModel = homeViewModel
                 )
             }
             
@@ -214,14 +225,14 @@ fun PromotionCard(
 @Composable
 fun CombinedCardsSection(
     onCardClick: (String) -> Unit,
-    unlockedCards: Set<String>
+    unlockedCards: Set<String>,
+    homeViewModel: HomeViewModel
 ) {
-    val allCards = getCards()
-    val unlockedCardsList = allCards.filter { unlockedCards.contains(it.id) }
-    val lockedCardsList = allCards.filter { !unlockedCards.contains(it.id) }
+    val cards by homeViewModel.cards.collectAsState()
+    val isLoading by homeViewModel.isLoading.collectAsState()
+    val error by homeViewModel.error.collectAsState()
     
-    // Combine lists with unlocked cards first
-    val combinedCards = unlockedCardsList + lockedCardsList
+    val combinedCards = homeViewModel.getCombinedCards()
     
     if (combinedCards.isNotEmpty()) {
         Column {
@@ -587,7 +598,7 @@ fun PointsSection(
 
 @Composable
 fun RealisticCardView(
-    card: CardItem,
+    card: com.mobizonetech.aeon_wallet_cursor.domain.model.Card,
     unlockedCards: Set<String>,
     onClick: () -> Unit
 ) {
@@ -598,8 +609,8 @@ fun RealisticCardView(
         onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = if (card.isLocked && !unlockedCards.contains(card.id)) 
-                card.backgroundColor.copy(alpha = 0.4f) 
-            else card.backgroundColor
+                androidx.compose.ui.graphics.Color(card.backgroundColor).copy(alpha = 0.4f) 
+            else androidx.compose.ui.graphics.Color(card.backgroundColor)
         ),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
@@ -650,8 +661,8 @@ fun RealisticCardView(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            card.backgroundColor,
-                            card.backgroundColor.copy(alpha = 0.8f)
+                            androidx.compose.ui.graphics.Color(card.backgroundColor),
+                            androidx.compose.ui.graphics.Color(card.backgroundColor).copy(alpha = 0.8f)
                         )
                     ),
                     shape = RoundedCornerShape(16.dp)
@@ -673,7 +684,7 @@ fun RealisticCardView(
                         text = "AEON BANK",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = card.textColor,
+                        color = androidx.compose.ui.graphics.Color(card.textColor),
                         letterSpacing = 1.sp
                     )
                     
@@ -687,7 +698,7 @@ fun RealisticCardView(
                         text = if (unlockedCards.contains(card.id)) card.maskedCardNumber else "**** **** **** ****",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = card.textColor,
+                        color = androidx.compose.ui.graphics.Color(card.textColor),
                         letterSpacing = 2.sp,
                         fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                     )
@@ -704,14 +715,14 @@ fun RealisticCardView(
                             Text(
                                 text = "CARDHOLDER NAME",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = card.textColor.copy(alpha = 0.7f),
+                                color = androidx.compose.ui.graphics.Color(card.textColor).copy(alpha = 0.7f),
                                 fontSize = 10.sp
                             )
                             Text(
                                 text = if (unlockedCards.contains(card.id)) card.cardHolderName else "**** ****",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = card.textColor,
+                                color = androidx.compose.ui.graphics.Color(card.textColor),
                                 letterSpacing = 1.sp
                             )
                         }
@@ -722,14 +733,14 @@ fun RealisticCardView(
                             Text(
                                 text = "EXPIRES",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = card.textColor.copy(alpha = 0.7f),
+                                color = androidx.compose.ui.graphics.Color(card.textColor).copy(alpha = 0.7f),
                                 fontSize = 10.sp
                             )
                             Text(
                                 text = if (unlockedCards.contains(card.id)) card.expiryDate else "**/**",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = card.textColor,
+                                color = androidx.compose.ui.graphics.Color(card.textColor),
                                 letterSpacing = 1.sp
                             )
                         }
@@ -745,7 +756,7 @@ fun RealisticCardView(
                     Text(
                         text = "CVV: ${if (unlockedCards.contains(card.id)) card.cvv else "***"}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = card.textColor.copy(alpha = 0.8f),
+                                color = androidx.compose.ui.graphics.Color(card.textColor).copy(alpha = 0.8f),
                         fontSize = 12.sp
                     )
                     
@@ -753,7 +764,7 @@ fun RealisticCardView(
                         text = card.amount,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = card.textColor
+                        color = androidx.compose.ui.graphics.Color(card.textColor)
                     )
                 }
             }
