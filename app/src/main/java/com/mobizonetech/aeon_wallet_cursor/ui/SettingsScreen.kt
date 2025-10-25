@@ -1,9 +1,10 @@
 package com.mobizonetech.aeon_wallet_cursor.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -13,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -21,6 +25,11 @@ import androidx.compose.ui.unit.sp
 fun SettingsScreen(
     onBackClick: () -> Unit
 ) {
+    var showNotificationDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showPasscodeDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -42,77 +51,91 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(16.dp))
             
-            // Account Settings
-            item {
-                Text(
-                    text = "Account",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            // Notification Preferences
+            SettingsItem(
+                title = "Notification Preferences",
+                subtitle = "Manage notification settings",
+                icon = Icons.Default.Notifications,
+                iconColor = androidx.compose.ui.graphics.Color(0xFF2196F3),
+                onClick = { showNotificationDialog = true }
+            )
             
-            items(getAccountSettings()) { setting ->
-                SettingsItem(
-                    setting = setting,
-                    onClick = { /* Handle setting click */ }
-                )
-            }
+            // Language
+            SettingsItem(
+                title = "Language",
+                subtitle = "English",
+                icon = Icons.Default.Star,
+                iconColor = androidx.compose.ui.graphics.Color(0xFF4CAF50),
+                onClick = { showLanguageDialog = true }
+            )
             
-            // Security Settings
-            item {
-                Text(
-                    text = "Security",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
-            }
+            // Change Passcode
+            SettingsItem(
+                title = "Change Passcode",
+                subtitle = "Update your security passcode",
+                icon = Icons.Default.Lock,
+                iconColor = androidx.compose.ui.graphics.Color(0xFFF44336),
+                onClick = { showPasscodeDialog = true }
+            )
             
-            items(getSecuritySettings()) { setting ->
-                SettingsItem(
-                    setting = setting,
-                    onClick = { /* Handle setting click */ }
-                )
-            }
+            // Theme
+            SettingsItem(
+                title = "Theme",
+                subtitle = "Light",
+                icon = Icons.Default.Star,
+                iconColor = androidx.compose.ui.graphics.Color(0xFF9C27B0),
+                onClick = { showThemeDialog = true }
+            )
             
-            // App Settings
-            item {
-                Text(
-                    text = "App",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
-            }
-            
-            items(getAppSettings()) { setting ->
-                SettingsItem(
-                    setting = setting,
-                    onClick = { /* Handle setting click */ }
-                )
-            }
-            
-            item {
-                Spacer(modifier = Modifier.height(80.dp))
-            }
+            Spacer(modifier = Modifier.height(80.dp))
         }
+    }
+    
+    // Notification Preferences Dialog
+    if (showNotificationDialog) {
+        NotificationPreferencesDialog(
+            onDismiss = { showNotificationDialog = false }
+        )
+    }
+    
+    // Language Selection Dialog
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+    
+    // Change Passcode Dialog
+    if (showPasscodeDialog) {
+        ChangePasscodeDialog(
+            onDismiss = { showPasscodeDialog = false }
+        )
+    }
+    
+    // Theme Selection Dialog
+    if (showThemeDialog) {
+        ThemeSelectionDialog(
+            onDismiss = { showThemeDialog = false }
+        )
     }
 }
 
 @Composable
 fun SettingsItem(
-    setting: SettingItem,
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    iconColor: Color,
     onClick: () -> Unit
 ) {
     Card(
@@ -134,21 +157,21 @@ fun SettingsItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    setting.icon,
+                    icon,
                     contentDescription = null,
-                    tint = setting.iconColor,
+                    tint = iconColor,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = setting.title,
+                        text = title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium
                     )
-                    if (setting.subtitle.isNotEmpty()) {
+                    if (subtitle.isNotEmpty()) {
                         Text(
-                            text = setting.subtitle,
+                            text = subtitle,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -166,89 +189,311 @@ fun SettingsItem(
     }
 }
 
-data class SettingItem(
-    val id: String,
-    val title: String,
-    val subtitle: String = "",
-    val icon: ImageVector,
-    val iconColor: Color
-)
-
-fun getAccountSettings(): List<SettingItem> = listOf(
-    SettingItem(
-        id = "profile",
-        title = "Profile Information",
-        subtitle = "Update your personal details",
-        icon = Icons.Default.Person,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF2196F3)
-    ),
-    SettingItem(
-        id = "notifications",
-        title = "Notification Preferences",
-        subtitle = "Manage notification settings",
-        icon = Icons.Default.Notifications,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF2196F3)
-    ),
-    SettingItem(
-        id = "language",
-        title = "Language",
-        subtitle = "English",
-        icon = Icons.Default.Star,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF2196F3)
+// Notification Preferences Dialog
+@Composable
+fun NotificationPreferencesDialog(
+    onDismiss: () -> Unit
+) {
+    var pushNotifications by remember { mutableStateOf(true) }
+    var emailNotifications by remember { mutableStateOf(false) }
+    var smsNotifications by remember { mutableStateOf(false) }
+    var transactionAlerts by remember { mutableStateOf(true) }
+    var promotionalNotifications by remember { mutableStateOf(false) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Notification Preferences",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Push Notifications")
+                    Switch(
+                        checked = pushNotifications,
+                        onCheckedChange = { pushNotifications = it }
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Email Notifications")
+                    Switch(
+                        checked = emailNotifications,
+                        onCheckedChange = { emailNotifications = it }
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("SMS Notifications")
+                    Switch(
+                        checked = smsNotifications,
+                        onCheckedChange = { smsNotifications = it }
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Transaction Alerts")
+                    Switch(
+                        checked = transactionAlerts,
+                        onCheckedChange = { transactionAlerts = it }
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Promotional Notifications")
+                    Switch(
+                        checked = promotionalNotifications,
+                        onCheckedChange = { promotionalNotifications = it }
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
     )
-)
+}
 
-fun getSecuritySettings(): List<SettingItem> = listOf(
-    SettingItem(
-        id = "passcode",
-        title = "Change Passcode",
-        subtitle = "Update your security passcode",
-        icon = Icons.Default.Lock,
-        iconColor = androidx.compose.ui.graphics.Color(0xFFF44336)
-    ),
-    SettingItem(
-        id = "biometric",
-        title = "Biometric Authentication",
-        subtitle = "Use fingerprint or face unlock",
-        icon = Icons.Default.Star,
-        iconColor = androidx.compose.ui.graphics.Color(0xFFF44336)
-    ),
-    SettingItem(
-        id = "twoFactor",
-        title = "Two-Factor Authentication",
-        subtitle = "Add extra security to your account",
-        icon = Icons.Default.Star,
-        iconColor = androidx.compose.ui.graphics.Color(0xFFF44336)
+// Language Selection Dialog
+@Composable
+fun LanguageSelectionDialog(
+    onDismiss: () -> Unit
+) {
+    var selectedLanguage by remember { mutableStateOf("English") }
+    val languages = listOf("English", "Spanish", "French", "German", "Italian", "Portuguese")
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Select Language",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                languages.forEach { language ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedLanguage == language,
+                            onClick = { selectedLanguage = language }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = language,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
     )
-)
+}
 
-fun getAppSettings(): List<SettingItem> = listOf(
-    SettingItem(
-        id = "theme",
-        title = "Theme",
-        subtitle = "Light",
-        icon = Icons.Default.Star,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF9C27B0)
-    ),
-    SettingItem(
-        id = "currency",
-        title = "Default Currency",
-        subtitle = "USD",
-        icon = Icons.Default.Star,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF9C27B0)
-    ),
-    SettingItem(
-        id = "dataUsage",
-        title = "Data Usage",
-        subtitle = "Manage app data",
-        icon = Icons.Default.Star,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF9C27B0)
-    ),
-    SettingItem(
-        id = "about",
-        title = "About",
-        subtitle = "App version 1.0.0",
-        icon = Icons.Default.Info,
-        iconColor = androidx.compose.ui.graphics.Color(0xFF9C27B0)
+// Change Passcode Dialog
+@Composable
+fun ChangePasscodeDialog(
+    onDismiss: () -> Unit
+) {
+    var currentPasscode by remember { mutableStateOf("") }
+    var newPasscode by remember { mutableStateOf("") }
+    var confirmPasscode by remember { mutableStateOf("") }
+    var showCurrentPasscode by remember { mutableStateOf(false) }
+    var showNewPasscode by remember { mutableStateOf(false) }
+    var showConfirmPasscode by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Change Passcode",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                
+                OutlinedTextField(
+                    value = currentPasscode,
+                    onValueChange = { currentPasscode = it },
+                    label = { Text("Current Passcode") },
+                    visualTransformation = if (showCurrentPasscode) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = {
+                        IconButton(onClick = { showCurrentPasscode = !showCurrentPasscode }) {
+                            Icon(
+                                if (showCurrentPasscode) Icons.Default.Star else Icons.Default.Star,
+                                contentDescription = if (showCurrentPasscode) "Hide" else "Show"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                OutlinedTextField(
+                    value = newPasscode,
+                    onValueChange = { newPasscode = it },
+                    label = { Text("New Passcode") },
+                    visualTransformation = if (showNewPasscode) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = {
+                        IconButton(onClick = { showNewPasscode = !showNewPasscode }) {
+                            Icon(
+                                if (showNewPasscode) Icons.Default.Star else Icons.Default.Star,
+                                contentDescription = if (showNewPasscode) "Hide" else "Show"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                OutlinedTextField(
+                    value = confirmPasscode,
+                    onValueChange = { confirmPasscode = it },
+                    label = { Text("Confirm New Passcode") },
+                    visualTransformation = if (showConfirmPasscode) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = {
+                        IconButton(onClick = { showConfirmPasscode = !showConfirmPasscode }) {
+                            Icon(
+                                if (showConfirmPasscode) Icons.Default.Star else Icons.Default.Star,
+                                contentDescription = if (showConfirmPasscode) "Hide" else "Show"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    when {
+                        currentPasscode.isEmpty() -> errorMessage = "Please enter current passcode"
+                        newPasscode.length < 4 -> errorMessage = "New passcode must be at least 4 digits"
+                        newPasscode != confirmPasscode -> errorMessage = "Passcodes do not match"
+                        else -> {
+                            errorMessage = ""
+                            onDismiss()
+                        }
+                    }
+                }
+            ) {
+                Text("Change")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
     )
-)
+}
+
+// Theme Selection Dialog
+@Composable
+fun ThemeSelectionDialog(
+    onDismiss: () -> Unit
+) {
+    var selectedTheme by remember { mutableStateOf("Light") }
+    val themes = listOf("Light", "Dark", "System Default")
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Select Theme",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                themes.forEach { theme ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedTheme == theme,
+                            onClick = { selectedTheme = theme }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = theme,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
