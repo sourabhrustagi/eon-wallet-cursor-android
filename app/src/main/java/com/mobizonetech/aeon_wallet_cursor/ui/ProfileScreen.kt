@@ -27,6 +27,8 @@ fun ProfileScreen(
     onPrivacyPolicyClick: () -> Unit = {},
     onTermsClick: () -> Unit = {},
     onDonateClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onContactUsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -95,6 +97,8 @@ fun ProfileScreen(
         }
         
         val profileOptions = listOf(
+            "Settings" to Icons.Default.Star,
+            "Contact Us" to Icons.Default.Star,
             "Donate" to Icons.Default.Favorite,
             "Feedback" to Icons.Default.Star,
             "Privacy Policy" to Icons.Default.Info,
@@ -108,6 +112,8 @@ fun ProfileScreen(
                     .padding(vertical = 4.dp),
                 onClick = { 
                     when (title) {
+                        "Settings" -> onSettingsClick()
+                        "Contact Us" -> onContactUsClick()
                         "Donate" -> onDonateClick()
                         "Feedback" -> onFeedbackClick()
                         "Privacy Policy" -> onPrivacyPolicyClick()

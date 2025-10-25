@@ -45,36 +45,49 @@ fun CryptoTradingScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Tab Selection
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                FilterChip(
-                    onClick = { selectedTab = "buy" },
-                    label = { Text("Buy") },
-                    selected = selectedTab == "buy",
-                    modifier = Modifier.weight(1f)
-                )
-                FilterChip(
-                    onClick = { selectedTab = "sell" },
-                    label = { Text("Sell") },
-                    selected = selectedTab == "sell",
-                    modifier = Modifier.weight(1f)
-                )
+            item {
+                // Tab Selection
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        onClick = { selectedTab = "buy" },
+                        label = { Text("Buy") },
+                        selected = selectedTab == "buy",
+                        modifier = Modifier.weight(1f)
+                    )
+                    FilterChip(
+                        onClick = { selectedTab = "sell" },
+                        label = { Text("Sell") },
+                        selected = selectedTab == "sell",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
             
-            Spacer(modifier = Modifier.height(24.dp))
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             
             when (selectedTab) {
-                "buy" -> BuyCryptoScreen()
-                "sell" -> SellCryptoScreen()
+                "buy" -> {
+                    item { BuyCryptoScreen() }
+                }
+                "sell" -> {
+                    item { SellCryptoScreen() }
+                }
+            }
+            
+            item {
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }

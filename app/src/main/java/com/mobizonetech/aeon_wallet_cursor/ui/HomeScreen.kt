@@ -34,7 +34,8 @@ fun HomeScreen(
     onCardClick: (String) -> Unit = {},
     onBankProductsClick: () -> Unit = {},
     onCardApplyClick: (String) -> Unit = {},
-    onPointsClick: () -> Unit = {}
+    onPointsClick: () -> Unit = {},
+    onUtilityBillClick: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val unlockPreferences = remember { UnlockPreferences(context) }
@@ -94,6 +95,13 @@ fun HomeScreen(
             item {
                 PromotionsSection(
                     onPromotionClick = onPromotionClick
+                )
+            }
+            
+            // Utility Bills Section
+            item {
+                UtilityBillsSection(
+                    onUtilityBillClick = onUtilityBillClick
                 )
             }
             
@@ -950,3 +958,137 @@ fun EnhancedCardItem(
         }
     }
 }
+
+@Composable
+fun UtilityBillsSection(
+    onUtilityBillClick: (String) -> Unit
+) {
+    Column {
+        Text(
+            text = "Pay Bills",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.horizontalScroll(rememberScrollState())
+        ) {
+            getUtilityBills().forEach { bill ->
+                UtilityBillCard(
+                    bill = bill,
+                    onClick = { onUtilityBillClick(bill.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun UtilityBillCard(
+    bill: UtilityBill,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .width(120.dp)
+            .height(100.dp),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(
+            containerColor = bill.backgroundColor
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            bill.backgroundColor,
+                            bill.backgroundColor.copy(alpha = 0.8f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    bill.icon,
+                    contentDescription = null,
+                    tint = bill.textColor,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = bill.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = bill.textColor,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+data class UtilityBill(
+    val id: String,
+    val name: String,
+    val icon: ImageVector,
+    val backgroundColor: androidx.compose.ui.graphics.Color,
+    val textColor: androidx.compose.ui.graphics.Color
+)
+
+fun getUtilityBills(): List<UtilityBill> = listOf(
+    UtilityBill(
+        id = "electricity",
+        name = "Electricity",
+        icon = Icons.Default.Star,
+        backgroundColor = androidx.compose.ui.graphics.Color(0xFF4CAF50),
+        textColor = androidx.compose.ui.graphics.Color.White
+    ),
+    UtilityBill(
+        id = "mobile",
+        name = "Mobile Recharge",
+        icon = Icons.Default.Star,
+        backgroundColor = androidx.compose.ui.graphics.Color(0xFF2196F3),
+        textColor = androidx.compose.ui.graphics.Color.White
+    ),
+    UtilityBill(
+        id = "water",
+        name = "Water Bill",
+        icon = Icons.Default.Star,
+        backgroundColor = androidx.compose.ui.graphics.Color(0xFF00BCD4),
+        textColor = androidx.compose.ui.graphics.Color.White
+    ),
+    UtilityBill(
+        id = "gas",
+        name = "Gas Bill",
+        icon = Icons.Default.Star,
+        backgroundColor = androidx.compose.ui.graphics.Color(0xFFFF9800),
+        textColor = androidx.compose.ui.graphics.Color.White
+    ),
+    UtilityBill(
+        id = "internet",
+        name = "Internet",
+        icon = Icons.Default.Star,
+        backgroundColor = androidx.compose.ui.graphics.Color(0xFF9C27B0),
+        textColor = androidx.compose.ui.graphics.Color.White
+    ),
+    UtilityBill(
+        id = "cable",
+        name = "Cable TV",
+        icon = Icons.Default.Star,
+        backgroundColor = androidx.compose.ui.graphics.Color(0xFFE91E63),
+        textColor = androidx.compose.ui.graphics.Color.White
+    )
+)

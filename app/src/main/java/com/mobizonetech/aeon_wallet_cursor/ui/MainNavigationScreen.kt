@@ -38,7 +38,8 @@ fun MainNavigationScreen(
                         currentRoute != "sendMoney" && currentRoute != "requestMoney" && currentRoute != "feedback" &&
                         currentRoute != "privacyPolicy" && currentRoute != "termsConditions" && currentRoute != "redeemPoints" &&
                         currentRoute != "organizations" && currentRoute != "donation" && currentRoute != "cardRepayment" && 
-                        currentRoute != "loanRepayment") {
+                        currentRoute != "loanRepayment" && currentRoute != "cryptoTrading" && currentRoute != "settings" && 
+                        currentRoute != "contactUs") {
                 MainBottomNavigationBar(
                     currentTab = currentTab,
                     onTabSelected = { tab ->
@@ -116,6 +117,10 @@ fun MainNavigationScreen(
                     },
                     onPointsClick = {
                         navController.navigate("redeemPoints")
+                    },
+                    onUtilityBillClick = { billId ->
+                        // Handle utility bill click - could navigate to bill payment screen
+                        // For now, just show a placeholder
                     }
                 )
             }
@@ -160,6 +165,12 @@ fun MainNavigationScreen(
                     },
                     onDonateClick = {
                         navController.navigate("organizations")
+                    },
+                    onSettingsClick = {
+                        navController.navigate("settings")
+                    },
+                    onContactUsClick = {
+                        navController.navigate("contactUs")
                     }
                 )
             }
@@ -331,16 +342,18 @@ fun MainNavigationScreen(
                     }
                 )
             }
-            composable("donation/{organizationId}") { backStackEntry ->
-                currentRoute = "donation"
-                val organizationId = backStackEntry.arguments?.getString("organizationId") ?: ""
-                DonationScreen(
-                    organizationId = organizationId,
+            composable("settings") {
+                currentRoute = "settings"
+                SettingsScreen(
                     onBackClick = {
                         navController.popBackStack()
-                    },
-                    onDonateClick = { orgId, name, email, phone, amount ->
-                        // Handle donation logic here
+                    }
+                )
+            }
+            composable("contactUs") {
+                currentRoute = "contactUs"
+                ContactUsScreen(
+                    onBackClick = {
                         navController.popBackStack()
                     }
                 )
