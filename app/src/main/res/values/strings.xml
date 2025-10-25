@@ -21,7 +21,7 @@
     <string name="enter_id_hint">Enter your ID</string>
     <string name="enter_card_number_hint">Enter card number</string>
     <string name="select_card_type">Select card type</string>
-    <string name="continue">Continue</string>
+    <string name="btn_continue">Continue</string>
     <string name="back">Back</string>
     
     <string name="otp_title">Verify OTP</string>

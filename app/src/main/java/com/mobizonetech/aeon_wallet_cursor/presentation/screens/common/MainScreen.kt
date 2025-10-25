@@ -92,5 +92,3 @@ private fun shouldShowBottomBar(currentRoute: String): Boolean {
     )
     return currentRoute !in hiddenRoutes
 }
-
-}

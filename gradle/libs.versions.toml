@@ -12,6 +12,7 @@ hilt = "2.48"
 hiltNavigationCompose = "1.1.0"
 navigationCompose = "2.7.7"
 datastorePreferences = "1.0.0"
+ksp = "2.0.21-1.0.25"
 lifecycleViewmodelCompose = "2.9.4"
 lifecycleRuntimeCompose = "2.9.4"
 composeAnimation = "1.7.6"
@@ -84,5 +85,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
