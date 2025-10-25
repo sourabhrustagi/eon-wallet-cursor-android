@@ -1,9 +1,10 @@
 package com.mobizonetech.aeon_wallet_cursor.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -61,281 +62,260 @@ fun UtilityPaymentScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(16.dp))
             
             // Bill Information
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = billInfo.backgroundColor.copy(alpha = 0.1f)
-                    ),
-                    shape = RoundedCornerShape(16.dp)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = billInfo.backgroundColor.copy(alpha = 0.1f)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            billInfo.icon,
-                            contentDescription = null,
-                            tint = billInfo.backgroundColor,
-                            modifier = Modifier.size(40.dp)
+                    Icon(
+                        billInfo.icon,
+                        contentDescription = null,
+                        tint = billInfo.backgroundColor,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = billInfo.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = billInfo.backgroundColor
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text(
-                                text = billInfo.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = billInfo.backgroundColor
-                            )
-                            Text(
-                                text = billInfo.description,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        Text(
+                            text = billInfo.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
             
             // Payment Form
-            item {
-                Text(
-                    text = "Payment Details",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Text(
+                text = "Payment Details",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
             
             // Account Number Field
-            item {
-                OutlinedTextField(
-                    value = accountNumber,
-                    onValueChange = {
-                        accountNumber = it
-                        accountNumberError = if (it.isEmpty()) "Account number is required" 
-                        else if (it.length < 8) "Account number must be at least 8 digits" 
-                        else ""
-                    },
-                    label = { Text("Account Number") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = accountNumberError.isNotEmpty(),
-                    supportingText = if (accountNumberError.isNotEmpty()) {
-                        { Text(accountNumberError, color = MaterialTheme.colorScheme.error) }
-                    } else null,
-                    leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Account") }
-                )
-            }
+            OutlinedTextField(
+                value = accountNumber,
+                onValueChange = {
+                    accountNumber = it
+                    accountNumberError = if (it.isEmpty()) "Account number is required" 
+                    else if (it.length < 8) "Account number must be at least 8 digits" 
+                    else ""
+                },
+                label = { Text("Account Number") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = accountNumberError.isNotEmpty(),
+                supportingText = if (accountNumberError.isNotEmpty()) {
+                    { Text(accountNumberError, color = MaterialTheme.colorScheme.error) }
+                } else null,
+                leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Account") }
+            )
             
             // Customer Name Field
-            item {
-                OutlinedTextField(
-                    value = customerName,
-                    onValueChange = {
-                        customerName = it
-                        customerNameError = if (it.isEmpty()) "Customer name is required" 
-                        else if (it.length < 2) "Name must be at least 2 characters" 
-                        else ""
-                    },
-                    label = { Text("Customer Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    isError = customerNameError.isNotEmpty(),
-                    supportingText = if (customerNameError.isNotEmpty()) {
-                        { Text(customerNameError, color = MaterialTheme.colorScheme.error) }
-                    } else null,
-                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") }
-                )
-            }
+            OutlinedTextField(
+                value = customerName,
+                onValueChange = {
+                    customerName = it
+                    customerNameError = if (it.isEmpty()) "Customer name is required" 
+                    else if (it.length < 2) "Name must be at least 2 characters" 
+                    else ""
+                },
+                label = { Text("Customer Name") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                isError = customerNameError.isNotEmpty(),
+                supportingText = if (customerNameError.isNotEmpty()) {
+                    { Text(customerNameError, color = MaterialTheme.colorScheme.error) }
+                } else null,
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") }
+            )
             
             // Phone Number Field
-            item {
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = {
-                        phoneNumber = it
-                        phoneNumberError = if (it.isEmpty()) "Phone number is required" 
-                        else if (it.length < 10) "Phone number must be at least 10 digits" 
-                        else ""
-                    },
-                    label = { Text("Phone Number") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    isError = phoneNumberError.isNotEmpty(),
-                    supportingText = if (phoneNumberError.isNotEmpty()) {
-                        { Text(phoneNumberError, color = MaterialTheme.colorScheme.error) }
-                    } else null,
-                    leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Phone") }
-                )
-            }
+            OutlinedTextField(
+                value = phoneNumber,
+                onValueChange = {
+                    phoneNumber = it
+                    phoneNumberError = if (it.isEmpty()) "Phone number is required" 
+                    else if (it.length < 10) "Phone number must be at least 10 digits" 
+                    else ""
+                },
+                label = { Text("Phone Number") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                isError = phoneNumberError.isNotEmpty(),
+                supportingText = if (phoneNumberError.isNotEmpty()) {
+                    { Text(phoneNumberError, color = MaterialTheme.colorScheme.error) }
+                } else null,
+                leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Phone") }
+            )
             
             // Email Field
-            item {
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = {
-                        email = it
-                        emailError = if (it.isEmpty()) "Email is required" 
-                        else if (!it.contains("@")) "Please enter a valid email" 
-                        else ""
-                    },
-                    label = { Text("Email Address") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    isError = emailError.isNotEmpty(),
-                    supportingText = if (emailError.isNotEmpty()) {
-                        { Text(emailError, color = MaterialTheme.colorScheme.error) }
-                    } else null,
-                    leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Email") }
-                )
-            }
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    emailError = if (it.isEmpty()) "Email is required" 
+                    else if (!it.contains("@")) "Please enter a valid email" 
+                    else ""
+                },
+                label = { Text("Email Address") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                isError = emailError.isNotEmpty(),
+                supportingText = if (emailError.isNotEmpty()) {
+                    { Text(emailError, color = MaterialTheme.colorScheme.error) }
+                } else null,
+                leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Email") }
+            )
             
             // Amount Field
-            item {
-                OutlinedTextField(
-                    value = amount,
-                    onValueChange = {
-                        amount = it
-                        amountError = if (it.isEmpty()) "Amount is required" 
-                        else if (it.toDoubleOrNull() == null) "Please enter a valid amount" 
-                        else if (it.toDoubleOrNull()!! < 1.0) "Amount must be at least $1.00" 
-                        else ""
-                    },
-                    label = { Text("Amount") },
-                    placeholder = { Text("0.00") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    isError = amountError.isNotEmpty(),
-                    supportingText = if (amountError.isNotEmpty()) {
-                        { Text(amountError, color = MaterialTheme.colorScheme.error) }
-                    } else null,
-                    leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Amount") }
-                )
-            }
+            OutlinedTextField(
+                value = amount,
+                onValueChange = {
+                    amount = it
+                    amountError = if (it.isEmpty()) "Amount is required" 
+                    else if (it.toDoubleOrNull() == null) "Please enter a valid amount" 
+                    else if (it.toDoubleOrNull()!! < 1.0) "Amount must be at least $1.00" 
+                    else ""
+                },
+                label = { Text("Amount") },
+                placeholder = { Text("0.00") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = amountError.isNotEmpty(),
+                supportingText = if (amountError.isNotEmpty()) {
+                    { Text(amountError, color = MaterialTheme.colorScheme.error) }
+                } else null,
+                leadingIcon = { Icon(Icons.Default.Star, contentDescription = "Amount") }
+            )
             
             // Payment Summary
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    shape = RoundedCornerShape(16.dp)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    Text(
+                        text = "Payment Summary",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Payment Summary",
+                            text = "Bill Amount",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = if (amount.isNotEmpty()) "$$amount" else "$0.00",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Processing Fee",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = "$2.50",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    
+                    HorizontalDivider()
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Total Amount",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Bill Amount",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = if (amount.isNotEmpty()) "$$amount" else "$0.00",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Processing Fee",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "$2.50",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        
-                        HorizontalDivider()
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Total Amount",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = if (amount.isNotEmpty()) "$${String.format("%.2f", amount.toDoubleOrNull()?.plus(2.50) ?: 0.0)}" else "$2.50",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                        Text(
+                            text = if (amount.isNotEmpty()) "$${String.format("%.2f", amount.toDoubleOrNull()?.plus(2.50) ?: 0.0)}" else "$2.50",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
             
             // Pay Now Button
-            item {
-                Button(
-                    onClick = onPaymentComplete,
-                    enabled = accountNumber.isNotEmpty() && customerName.isNotEmpty() && 
-                             phoneNumber.isNotEmpty() && email.isNotEmpty() && amount.isNotEmpty() &&
-                             accountNumberError.isEmpty() && customerNameError.isEmpty() && 
-                             phoneNumberError.isEmpty() && emailError.isEmpty() && amountError.isEmpty(),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Star,
-                        contentDescription = "Payment",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Pay Now",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+            Button(
+                onClick = onPaymentComplete,
+                enabled = accountNumber.isNotEmpty() && customerName.isNotEmpty() && 
+                         phoneNumber.isNotEmpty() && email.isNotEmpty() && amount.isNotEmpty() &&
+                         accountNumberError.isEmpty() && customerNameError.isEmpty() && 
+                         phoneNumberError.isEmpty() && emailError.isEmpty() && amountError.isEmpty(),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = "Payment",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Pay Now",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
             
-            item {
-                Spacer(modifier = Modifier.height(80.dp))
-            }
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
