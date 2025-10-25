@@ -231,7 +231,7 @@ fun CombinedCardsSection(
                 combinedCards.forEach { item ->
                     RealisticCardView(
                         card = item,
-                        isUnlocked = unlockedCards.contains(item.id),
+                        unlockedCards = unlockedCards,
                         onClick = { onCardClick(item.id) }
                     )
                 }
@@ -580,7 +580,7 @@ fun PointsSection(
 @Composable
 fun RealisticCardView(
     card: CardItem,
-    isUnlocked: Boolean,
+    unlockedCards: Set<String>,
     onClick: () -> Unit
 ) {
     Card(
@@ -589,7 +589,7 @@ fun RealisticCardView(
             .height(180.dp),
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (card.isLocked && !isUnlocked) 
+            containerColor = if (card.isLocked && !unlockedCards.contains(card.id)) 
                 card.backgroundColor.copy(alpha = 0.4f) 
             else card.backgroundColor
         ),
@@ -597,7 +597,7 @@ fun RealisticCardView(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         // Lock overlay for locked cards
-        if (card.isLocked && !isUnlocked) {
+        if (card.isLocked && !unlockedCards.contains(card.id)) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -676,7 +676,7 @@ fun RealisticCardView(
                 // Card number
                 Column {
                     Text(
-                        text = if (isUnlocked) card.maskedCardNumber else "**** **** **** ****",
+                        text = if (unlockedCards.contains(card.id)) card.maskedCardNumber else "**** **** **** ****",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
                         color = card.textColor,
@@ -700,7 +700,7 @@ fun RealisticCardView(
                                 fontSize = 10.sp
                             )
                             Text(
-                                text = if (isUnlocked) card.cardHolderName else "**** ****",
+                                text = if (unlockedCards.contains(card.id)) card.cardHolderName else "**** ****",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
                                 color = card.textColor,
@@ -718,7 +718,7 @@ fun RealisticCardView(
                                 fontSize = 10.sp
                             )
                             Text(
-                                text = if (isUnlocked) card.expiryDate else "**/**",
+                                text = if (unlockedCards.contains(card.id)) card.expiryDate else "**/**",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
                                 color = card.textColor,
@@ -735,7 +735,7 @@ fun RealisticCardView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "CVV: ${if (isUnlocked) card.cvv else "***"}",
+                        text = "CVV: ${if (unlockedCards.contains(card.id)) card.cvv else "***"}",
                         style = MaterialTheme.typography.bodySmall,
                         color = card.textColor.copy(alpha = 0.8f),
                         fontSize = 12.sp

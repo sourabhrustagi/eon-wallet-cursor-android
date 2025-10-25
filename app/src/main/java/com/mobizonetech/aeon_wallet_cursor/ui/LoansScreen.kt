@@ -98,6 +98,7 @@ fun LoansScreen(
                             } else {
                                 LoanCard(
                                     loan = loan,
+                                    unlockedLoans = unlockedLoans,
                                     onClick = onLoanClick
                                 )
                             }
@@ -147,157 +148,34 @@ fun BankProductsLoansSection(
             modifier = Modifier.horizontalScroll(rememberScrollState())
         ) {
             // Personal Loan
-            Card(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(120.dp),
-                onClick = { onLoanApplyClick("personal_loan") },
-                colors = CardDefaults.cardColors(
-                    containerColor = androidx.compose.ui.graphics.Color(0xFF1976D2)
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Personal Loan",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                        Icon(
-                            Icons.Default.Home,
-                            contentDescription = null,
-                            tint = androidx.compose.ui.graphics.Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    
-                    Column {
-                        Text(
-                            text = "Up to $50,000",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f)
-                        )
-                        Text(
-                            text = "6.99% APR",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                    }
-                }
-            }
+            EnhancedLoanItem(
+                title = "Personal Loan",
+                subtitle = "Quick approval",
+                highlight = "Up to $50K",
+                icon = Icons.Default.Person,
+                backgroundColor = androidx.compose.ui.graphics.Color(0xFF1976D2),
+                onClick = { onLoanApplyClick("personal_loan") }
+            )
             
             // Home Loan
-            Card(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(120.dp),
-                onClick = { onLoanApplyClick("home_loan") },
-                colors = CardDefaults.cardColors(
-                    containerColor = androidx.compose.ui.graphics.Color(0xFF388E3C)
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Home Loan",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                        Icon(
-                            Icons.Default.Home,
-                            contentDescription = null,
-                            tint = androidx.compose.ui.graphics.Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    
-                    Column {
-                        Text(
-                            text = "Up to $2M",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f)
-                        )
-                        Text(
-                            text = "4.25% APR",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                    }
-                }
-            }
+            EnhancedLoanItem(
+                title = "Home Loan",
+                subtitle = "Low interest rates",
+                highlight = "Up to $2M",
+                icon = Icons.Default.Home,
+                backgroundColor = androidx.compose.ui.graphics.Color(0xFF388E3C),
+                onClick = { onLoanApplyClick("home_loan") }
+            )
             
             // Auto Loan
-            Card(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(120.dp),
-                onClick = { onLoanApplyClick("auto_loan") },
-                colors = CardDefaults.cardColors(
-                    containerColor = androidx.compose.ui.graphics.Color(0xFFD32F2F)
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Auto Loan",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                        Icon(
-                            Icons.Default.Home,
-                            contentDescription = null,
-                            tint = androidx.compose.ui.graphics.Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    
-                    Column {
-                        Text(
-                            text = "Up to $100K",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f)
-                        )
-                        Text(
-                            text = "3.99% APR",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                    }
-                }
-            }
+            EnhancedLoanItem(
+                title = "Auto Loan",
+                subtitle = "Drive away today",
+                highlight = "Up to $100K",
+                icon = Icons.Default.Home,
+                backgroundColor = androidx.compose.ui.graphics.Color(0xFFD32F2F),
+                onClick = { onLoanApplyClick("auto_loan") }
+            )
             
             // Business Loan
             Card(
@@ -357,6 +235,7 @@ fun BankProductsLoansSection(
 @Composable
 fun LoanCard(
     loan: LoanItem,
+    unlockedLoans: Set<String>,
     onClick: () -> Unit
 ) {
     Card(
@@ -365,13 +244,13 @@ fun LoanCard(
             .height(120.dp),
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (loan.isLocked) 
+            containerColor = if (loan.isLocked && !unlockedLoans.contains(loan.id)) 
                 loan.backgroundColor.copy(alpha = 0.4f) 
             else loan.backgroundColor
         )
     ) {
         // Lock overlay for locked loans
-        if (loan.isLocked) {
+        if (loan.isLocked && !unlockedLoans.contains(loan.id)) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -408,47 +287,70 @@ fun LoanCard(
                 }
             }
         }
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = loan.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = loan.textColor
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                        colors = listOf(
+                            loan.backgroundColor,
+                            loan.backgroundColor.copy(alpha = 0.8f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         loan.icon,
                         contentDescription = null,
                         tint = loan.textColor,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(28.dp)
+                    )
+                    
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                loan.textColor.copy(alpha = 0.2f),
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = loan.subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = loan.textColor,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+                
+                Column {
+                    Text(
+                        text = loan.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = loan.textColor
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = loan.amount,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = loan.textColor
                     )
                 }
-            }
-            
-            Column {
-                Text(
-                    text = loan.subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = loan.textColor
-                )
-                Text(
-                    text = loan.amount,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = loan.textColor
-                )
             }
         }
     }
@@ -639,6 +541,122 @@ fun UnlockedLoanCard(
                     fontWeight = FontWeight.Bold,
                     color = loan.textColor
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun EnhancedLoanItem(
+    title: String,
+    subtitle: String,
+    highlight: String,
+    icon: ImageVector,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .width(220.dp)
+            .height(140.dp),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                        colors = listOf(
+                            backgroundColor,
+                            backgroundColor.copy(alpha = 0.8f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Top section with title and icon
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = androidx.compose.ui.graphics.Color.White,
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f),
+                            fontSize = 12.sp
+                        )
+                    }
+                    
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                androidx.compose.ui.graphics.Color.White.copy(alpha = 0.2f),
+                                RoundedCornerShape(8.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            icon,
+                            contentDescription = null,
+                            tint = androidx.compose.ui.graphics.Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+                
+                // Bottom section with highlight
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = highlight,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = androidx.compose.ui.graphics.Color.White,
+                        fontSize = 16.sp
+                    )
+                    
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                androidx.compose.ui.graphics.Color.White.copy(alpha = 0.2f),
+                                RoundedCornerShape(12.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = "Apply",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = androidx.compose.ui.graphics.Color.White,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
             }
         }
     }
