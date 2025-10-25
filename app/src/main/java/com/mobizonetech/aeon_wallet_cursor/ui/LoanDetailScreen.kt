@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoanDetailScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onRepaymentClick: () -> Unit = {}
 ) {
     var otp by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -46,7 +47,7 @@ fun LoanDetailScreen(
         }
     ) { innerPadding ->
         if (isUnlocked) {
-            LoanDetailsContent()
+            LoanDetailsContent(onRepaymentClick = onRepaymentClick)
         } else {
             Column(
                 modifier = Modifier
@@ -101,7 +102,9 @@ fun LoanDetailScreen(
 }
 
 @Composable
-fun LoanDetailsContent() {
+fun LoanDetailsContent(
+    onRepaymentClick: () -> Unit = {}
+) {
     var currentPage by remember { mutableStateOf(1) }
     val itemsPerPage = 3
     val allPayments = getLoanPaymentHistory()
@@ -182,6 +185,28 @@ fun LoanDetailsContent() {
                     LoanInfoRow("Monthly Payment", "$650.00")
                     LoanInfoRow("Next Payment Due", "Dec 15, 2024")
                 }
+            }
+        }
+        
+        // Repayment Button
+        item {
+            Button(
+                onClick = onRepaymentClick,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = "Repayment",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Make Payment",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
         

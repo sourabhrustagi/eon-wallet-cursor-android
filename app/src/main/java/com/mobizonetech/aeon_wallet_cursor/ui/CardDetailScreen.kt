@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun CardDetailScreen(
     cardId: String = "card_1",
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onRepaymentClick: () -> Unit = {}
 ) {
     var currentStep by remember { mutableStateOf(1) }
     var cvv by remember { mutableStateOf("") }
@@ -56,7 +57,7 @@ fun CardDetailScreen(
     ) { innerPadding ->
         if (isUnlocked) {
             // Show card details after successful unlock
-            CardDetailsContent()
+            CardDetailsContent(onRepaymentClick = onRepaymentClick)
         } else {
             // Show unlock flow
             Column(
@@ -363,7 +364,9 @@ fun OtpVerificationStep(
 }
 
 @Composable
-fun CardDetailsContent() {
+fun CardDetailsContent(
+    onRepaymentClick: () -> Unit = {}
+) {
     var currentPage by remember { mutableStateOf(1) }
     val itemsPerPage = 3
     val allTransactions = getRecentCardTransactions()
@@ -509,6 +512,28 @@ fun CardDetailsContent() {
                     CardInfoRow("Due Date", "Dec 15, 2024")
                     CardInfoRow("Interest Rate", "18.99% APR")
                 }
+            }
+        }
+        
+        // Repayment Button
+        item {
+            Button(
+                onClick = onRepaymentClick,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = "Repayment",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Make Payment",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
         

@@ -109,9 +109,9 @@ fun ScanAndPayScreen(
         // QR Code Scanner Area
         Card(
             modifier = Modifier
-                .size(280.dp)
+                .size(320.dp)
                 .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             ),
@@ -141,7 +141,7 @@ fun ScanAndPayScreen(
                         // Scanning frame
                         Box(
                             modifier = Modifier
-                                .size(200.dp)
+                                .size(240.dp)
                                 .background(
                                     Color.Transparent,
                                     RoundedCornerShape(8.dp)
@@ -294,63 +294,6 @@ fun ScanAndPayScreen(
                         text = "Request Money",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // Recent Transactions
-        Text(
-            text = "Recent Transactions",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start)
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Sample transactions
-        val recentTransactions = listOf(
-            Triple("Payment to John Doe", "-$25.00", "2 hours ago"),
-            Triple("Received from Jane Smith", "+$50.00", "1 day ago"),
-            Triple("Coffee Shop Payment", "-$4.50", "2 days ago")
-        )
-        
-        recentTransactions.forEach { (description, amount, time) ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = time,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    
-                    Text(
-                        text = amount,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = if (amount.startsWith("+")) 
-                            Color(0xFF4CAF50) 
-                        else Color(0xFFF44336)
                     )
                 }
             }

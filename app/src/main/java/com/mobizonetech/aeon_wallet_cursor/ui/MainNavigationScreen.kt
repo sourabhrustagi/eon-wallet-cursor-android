@@ -37,7 +37,8 @@ fun MainNavigationScreen(
                         currentRoute != "bankProducts" && currentRoute != "cardApplication" && currentRoute != "loanApplication" &&
                         currentRoute != "sendMoney" && currentRoute != "requestMoney" && currentRoute != "feedback" &&
                         currentRoute != "privacyPolicy" && currentRoute != "termsConditions" && currentRoute != "redeemPoints" &&
-                        currentRoute != "organizations" && currentRoute != "donation") {
+                        currentRoute != "organizations" && currentRoute != "donation" && currentRoute != "cardRepayment" && 
+                        currentRoute != "loanRepayment") {
                 MainBottomNavigationBar(
                     currentTab = currentTab,
                     onTabSelected = { tab ->
@@ -187,6 +188,9 @@ fun MainNavigationScreen(
                 LoanDetailScreen(
                     onBackClick = {
                         navController.popBackStack()
+                    },
+                    onRepaymentClick = {
+                        navController.navigate("loanRepayment/loan_1")
                     }
                 )
             }
@@ -197,6 +201,9 @@ fun MainNavigationScreen(
                     cardId = cardId,
                     onBackClick = {
                         navController.popBackStack()
+                    },
+                    onRepaymentClick = {
+                        navController.navigate("cardRepayment/$cardId")
                     }
                 )
             }
@@ -334,6 +341,32 @@ fun MainNavigationScreen(
                     },
                     onDonateClick = { orgId, name, email, phone, amount ->
                         // Handle donation logic here
+                        navController.popBackStack()
+                    }
+                )
+            }
+            composable("cardRepayment/{cardId}") { backStackEntry ->
+                currentRoute = "cardRepayment"
+                val cardId = backStackEntry.arguments?.getString("cardId") ?: "card_1"
+                CardRepaymentScreen(
+                    cardId = cardId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onPaymentComplete = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+            composable("loanRepayment/{loanId}") { backStackEntry ->
+                currentRoute = "loanRepayment"
+                val loanId = backStackEntry.arguments?.getString("loanId") ?: "loan_1"
+                LoanRepaymentScreen(
+                    loanId = loanId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onPaymentComplete = {
                         navController.popBackStack()
                     }
                 )
