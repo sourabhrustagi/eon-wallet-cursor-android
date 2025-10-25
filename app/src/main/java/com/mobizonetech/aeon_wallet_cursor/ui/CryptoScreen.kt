@@ -25,11 +25,6 @@ fun CryptoScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Crypto Portfolio") },
-                actions = {
-                    IconButton(onClick = onTradingClick) {
-                        Icon(Icons.Default.Star, contentDescription = "Trading")
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -77,7 +72,10 @@ fun CryptoScreen(
             }
             
             items(getMarketAssetsList()) { asset ->
-                MarketAssetCard(asset = asset)
+                MarketAssetCard(
+                    asset = asset,
+                    onClick = onTradingClick
+                )
             }
             
             item {
@@ -193,9 +191,13 @@ fun CryptoAssetCard(asset: CryptoScreenAsset) {
 }
 
 @Composable
-fun MarketAssetCard(asset: CryptoScreenAsset) {
+fun MarketAssetCard(
+    asset: CryptoScreenAsset,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
