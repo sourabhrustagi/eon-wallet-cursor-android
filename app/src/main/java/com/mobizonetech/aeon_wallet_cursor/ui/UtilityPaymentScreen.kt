@@ -35,6 +35,7 @@ fun UtilityPaymentScreen(
     var customerNameError by remember { mutableStateOf("") }
     var phoneNumberError by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
+    var showSuccessScreen by remember { mutableStateOf(false) }
     
     // Get bill information based on billId
     val billInfo = remember(billId) {
@@ -293,7 +294,7 @@ fun UtilityPaymentScreen(
             
             // Pay Now Button
             Button(
-                onClick = onPaymentComplete,
+                onClick = { showSuccessScreen = true },
                 enabled = accountNumber.isNotEmpty() && customerName.isNotEmpty() && 
                          phoneNumber.isNotEmpty() && email.isNotEmpty() && amount.isNotEmpty() &&
                          accountNumberError.isEmpty() && customerNameError.isEmpty() && 
@@ -317,6 +318,24 @@ fun UtilityPaymentScreen(
             
             Spacer(modifier = Modifier.height(80.dp))
         }
+    }
+    
+    // Payment Success Screen
+    if (showSuccessScreen) {
+        PaymentSuccessScreen(
+            paymentType = "${billInfo.name} Bill Payment",
+            amount = if (amount.isNotEmpty()) "$${String.format("%.2f", amount.toDoubleOrNull()?.plus(2.50) ?: 0.0)}" else "$2.50",
+            transactionId = "TXN${System.currentTimeMillis()}",
+            onBackToHome = {
+                showSuccessScreen = false
+                onPaymentComplete()
+            },
+            onViewReceipt = {
+                // Handle view receipt - could navigate to receipt screen
+                showSuccessScreen = false
+                onPaymentComplete()
+            }
+        )
     }
 }
 

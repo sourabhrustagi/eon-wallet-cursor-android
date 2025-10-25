@@ -26,6 +26,7 @@ fun CardRepaymentScreen(
     var selectedPaymentType by remember { mutableStateOf("minimum") }
     var customAmount by remember { mutableStateOf("") }
     var customAmountError by remember { mutableStateOf("") }
+    var showSuccessScreen by remember { mutableStateOf(false) }
     
     // Sample card data
     val cardData = remember {
@@ -283,7 +284,7 @@ fun CardRepaymentScreen(
             // Pay Now Button
             item {
                 Button(
-                    onClick = onPaymentComplete,
+                    onClick = { showSuccessScreen = true },
                     enabled = selectedPaymentType != "partial" || (customAmount.isNotEmpty() && customAmountError.isEmpty()),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -301,6 +302,29 @@ fun CardRepaymentScreen(
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }
+    }
+    
+    // Payment Success Screen
+    if (showSuccessScreen) {
+        PaymentSuccessScreen(
+            paymentType = "Card Repayment",
+            amount = when (selectedPaymentType) {
+                "minimum" -> cardData.minimumPayment
+                "full" -> cardData.fullBalance
+                "partial" -> if (customAmount.isNotEmpty()) "$$customAmount" else "$0.00"
+                else -> "$0.00"
+            },
+            transactionId = "TXN${System.currentTimeMillis()}",
+            onBackToHome = {
+                showSuccessScreen = false
+                onPaymentComplete()
+            },
+            onViewReceipt = {
+                // Handle view receipt - could navigate to receipt screen
+                showSuccessScreen = false
+                onPaymentComplete()
+            }
+        )
     }
 }
 
