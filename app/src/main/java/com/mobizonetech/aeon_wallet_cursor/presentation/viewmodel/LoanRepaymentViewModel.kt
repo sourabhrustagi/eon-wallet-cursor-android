@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobizonetech.aeon_wallet_cursor.domain.model.Loan
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.LoanRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class LoanRepaymentData(
     val loanId: String,
@@ -18,7 +20,8 @@ data class LoanRepaymentData(
     val dueDate: String
 )
 
-class LoanRepaymentViewModel(
+@HiltViewModel
+class LoanRepaymentViewModel @Inject constructor(
     private val loanRepository: LoanRepository
 ) : ViewModel() {
 

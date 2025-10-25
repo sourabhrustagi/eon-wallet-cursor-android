@@ -3,42 +3,20 @@ package com.mobizonetech.aeon_wallet_cursor.data.repository
 import com.mobizonetech.aeon_wallet_cursor.domain.model.Loan
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.LoanRepository
 import com.mobizonetech.aeon_wallet_cursor.data.UnlockPreferences
+import com.mobizonetech.aeon_wallet_cursor.data.LoanDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class LoanRepositoryImpl(
-    private val unlockPreferences: UnlockPreferences
+@Singleton
+class LoanRepositoryImpl @Inject constructor(
+    private val unlockPreferences: UnlockPreferences,
+    private val loanDataStore: LoanDataStore
 ) : LoanRepository {
     
     override suspend fun getLoans(): List<Loan> {
-        return listOf(
-            Loan(
-                id = "loan_1",
-                title = "Personal Loan",
-                subtitle = "Outstanding",
-                amount = "$15,000",
-                backgroundColor = 0xFFE64A19,
-                textColor = 0xFFFFFFFF,
-                isLocked = true
-            ),
-            Loan(
-                id = "loan_2",
-                title = "Home Loan",
-                subtitle = "Outstanding",
-                amount = "$250,000",
-                backgroundColor = 0xFF7B1FA2,
-                textColor = 0xFFFFFFFF,
-                isLocked = false
-            ),
-            Loan(
-                id = "loan_3",
-                title = "Car Loan",
-                subtitle = "Outstanding",
-                amount = "$35,000",
-                backgroundColor = 0xFF1976D2,
-                textColor = 0xFFFFFFFF,
-                isLocked = true
-            )
-        )
+        return loanDataStore.getLoans().first()
     }
     
     override suspend fun getLoanById(id: String): Loan? {

@@ -16,20 +16,26 @@ import com.mobizonetech.aeon_wallet_cursor.data.UnlockPreferences
 import com.mobizonetech.aeon_wallet_cursor.data.UserData
 import com.mobizonetech.aeon_wallet_cursor.data.UserPreferences
 import com.mobizonetech.aeon_wallet_cursor.utils.RandomNameGenerator
-import com.mobizonetech.aeon_wallet_cursor.ui.*
+import com.mobizonetech.aeon_wallet_cursor.presentation.screens.auth.*
+import com.mobizonetech.aeon_wallet_cursor.presentation.screens.loans.LoanCardApplicationScreen
+import com.mobizonetech.aeon_wallet_cursor.presentation.screens.common.MainScreen
 import com.mobizonetech.aeon_wallet_cursor.ui.theme.AeonwalletcursorTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var userPreferences: UserPreferences
-    private lateinit var unlockPreferences: UnlockPreferences
+    
+    @Inject
+    lateinit var userPreferences: UserPreferences
+    
+    @Inject
+    lateinit var unlockPreferences: UnlockPreferences
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
-        userPreferences = UserPreferences(this)
-        unlockPreferences = UnlockPreferences(this)
         
         setContent {
             AeonwalletcursorTheme {
@@ -78,13 +84,13 @@ fun AeonWalletApp(
                 )
             }
         }
-                "welcome" -> {
-                    WelcomeScreen(
-                        onGetStartedClick = { currentScreen = "enterId" },
-                        onSignInClick = { currentScreen = "enterId" },
-                        onApplyForLoanCardClick = { currentScreen = "loanCardApplication" }
-                    )
-                }
+        "welcome" -> {
+            WelcomeScreen(
+                onGetStartedClick = { currentScreen = "enterId" },
+                onSignInClick = { currentScreen = "enterId" },
+                onApplyForLoanCardClick = { currentScreen = "loanCardApplication" }
+            )
+        }
         "enterId" -> {
             EnterIdScreen(
                 onBackClick = { currentScreen = "welcome" },
@@ -123,26 +129,26 @@ fun AeonWalletApp(
                 }
             )
         }
-                "loanCardApplication" -> {
-                    LoanCardApplicationScreen(
-                        onBackClick = { currentScreen = "welcome" },
-                        onApplicationSubmitted = { currentScreen = "welcome" }
-                    )
+        "loanCardApplication" -> {
+            LoanCardApplicationScreen(
+                onBackClick = { currentScreen = "welcome" },
+                onApplicationSubmitted = { currentScreen = "welcome" }
+            )
+        }
+        "home" -> {
+            MainScreen(
+                userName = displayName,
+                onLogout = {
+                    // Handle logout - reset unlock states and navigate to welcome screen
+                    coroutineScope.launch {
+                        unlockPreferences.resetAllUnlocks()
+                        userPreferences.logout()
+                    }
+                    // Generate a new random name for next login
+                    displayName = RandomNameGenerator.generateRandomName()
+                    currentScreen = "welcome"
                 }
-                "home" -> {
-                    MainNavigationScreen(
-                        userName = displayName,
-                        onLogout = {
-                            // Handle logout - reset unlock states and navigate to welcome screen
-                            coroutineScope.launch {
-                                unlockPreferences.resetAllUnlocks()
-                                userPreferences.logout()
-                            }
-                            // Generate a new random name for next login
-                            displayName = RandomNameGenerator.generateRandomName()
-                            currentScreen = "welcome"
-                        }
-                    )
-                }
+            )
+        }
     }
 }

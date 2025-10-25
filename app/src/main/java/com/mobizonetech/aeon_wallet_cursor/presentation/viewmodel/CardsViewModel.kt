@@ -6,13 +6,16 @@ import com.mobizonetech.aeon_wallet_cursor.domain.model.Card
 import com.mobizonetech.aeon_wallet_cursor.domain.usecase.GetCardsUseCase
 import com.mobizonetech.aeon_wallet_cursor.domain.usecase.GetUnlockedCardsUseCase
 import com.mobizonetech.aeon_wallet_cursor.domain.usecase.UnlockCardUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CardsViewModel(
+@HiltViewModel
+class CardsViewModel @Inject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     private val getUnlockedCardsUseCase: GetUnlockedCardsUseCase,
     private val unlockCardUseCase: UnlockCardUseCase

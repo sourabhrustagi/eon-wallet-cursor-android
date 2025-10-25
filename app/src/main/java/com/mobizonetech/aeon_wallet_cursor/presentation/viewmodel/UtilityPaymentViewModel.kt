@@ -2,12 +2,14 @@ package com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import javax.inject.Inject
 
 data class UtilityBillInfo(
     val id: String,
@@ -17,7 +19,8 @@ data class UtilityBillInfo(
     val backgroundColor: androidx.compose.ui.graphics.Color
 )
 
-class UtilityPaymentViewModel : ViewModel() {
+@HiltViewModel
+class UtilityPaymentViewModel @Inject constructor() : ViewModel() {
 
     private val _billInfo = MutableStateFlow<UtilityBillInfo?>(null)
     val billInfo: StateFlow<UtilityBillInfo?> = _billInfo.asStateFlow()

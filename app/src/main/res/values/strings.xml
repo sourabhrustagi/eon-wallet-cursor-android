@@ -1,3 +1,198 @@
 <resources>
-    <string name="app_name">Aeon-wallet-cursor</string>
+    <!-- App Name -->
+    <string name="app_name">AEON Wallet</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Cards</string>
+    <string name="nav_loans">Loans</string>
+    <string name="nav_scan">Scan &amp; Pay</string>
+    <string name="nav_crypto">Crypto</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_profile">Profile</string>
+    
+    <!-- Auth Screens -->
+    <string name="welcome_title">Welcome to AEON Wallet</string>
+    <string name="welcome_subtitle">Your digital financial companion</string>
+    <string name="get_started">Get Started</string>
+    <string name="sign_in">Sign In</string>
+    <string name="apply_for_loan_card">Apply for Loan/Card</string>
+    
+    <string name="enter_id_title">Enter Your Details</string>
+    <string name="enter_id_hint">Enter your ID</string>
+    <string name="enter_card_number_hint">Enter card number</string>
+    <string name="select_card_type">Select card type</string>
+    <string name="continue">Continue</string>
+    <string name="back">Back</string>
+    
+    <string name="otp_title">Verify OTP</string>
+    <string name="otp_subtitle">We sent a verification code to</string>
+    <string name="otp_hint">Enter OTP</string>
+    <string name="verify">Verify</string>
+    <string name="resend_otp">Resend OTP</string>
+    
+    <string name="set_passcode_title">Set Your Passcode</string>
+    <string name="set_passcode_subtitle">Create a 6-digit passcode for secure access</string>
+    <string name="passcode_hint">Enter passcode</string>
+    <string name="confirm_passcode_hint">Confirm passcode</string>
+    
+    <string name="set_security_passcode_title">Set Security Passcode</string>
+    <string name="set_security_passcode_subtitle">Create a security passcode for sensitive operations</string>
+    <string name="security_passcode_hint">Enter security passcode</string>
+    <string name="confirm_security_passcode_hint">Confirm security passcode</string>
+    
+    <!-- Card Types -->
+    <string name="card_type_credit">Credit Card</string>
+    <string name="card_type_debit">Debit Card</string>
+    <string name="card_type_premium">Premium Card</string>
+    
+    <!-- Card Details -->
+    <string name="card_credit">Credit Card</string>
+    <string name="card_debit">Debit Card</string>
+    <string name="card_premium">Premium Card</string>
+    <string name="available_balance">Available Balance</string>
+    <string name="card_holder_name">JOHN DOE</string>
+    <string name="unlock_card">Unlock Card</string>
+    <string name="lock_card">Lock Card</string>
+    
+    <!-- Loan Details -->
+    <string name="loan_personal">Personal Loan</string>
+    <string name="loan_home">Home Loan</string>
+    <string name="loan_car">Car Loan</string>
+    <string name="outstanding">Outstanding</string>
+    <string name="unlock_loan">Unlock Loan</string>
+    <string name="lock_loan">Lock Loan</string>
+    
+    <!-- Home Screen -->
+    <string name="home_welcome">Welcome back, %1$s!</string>
+    <string name="promotions">Promotions</string>
+    <string name="bank_products">Bank Products</string>
+    <string name="redeem_points">Redeem Points</string>
+    <string name="utility_bills">Utility Bills</string>
+    
+    <!-- Payment Screens -->
+    <string name="send_money">Send Money</string>
+    <string name="request_money">Request Money</string>
+    <string name="recipient_name">Recipient Name</string>
+    <string name="amount">Amount</string>
+    <string name="note">Note (Optional)</string>
+    <string name="send">Send</string>
+    <string name="request">Request</string>
+    <string name="payment_successful">Payment Successful!</string>
+    <string name="payment_completed">Your payment has been processed successfully.</string>
+    
+    <!-- Utility Payment -->
+    <string name="utility_payment">Utility Payment</string>
+    <string name="electricity">Electricity</string>
+    <string name="mobile_recharge">Mobile Recharge</string>
+    <string name="water_bill">Water Bill</string>
+    <string name="gas_bill">Gas Bill</string>
+    <string name="internet">Internet</string>
+    <string name="cable_tv">Cable TV</string>
+    <string name="account_number">Account Number</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="pay_now">Pay Now</string>
+    
+    <!-- Card Repayment -->
+    <string name="card_repayment">Card Repayment</string>
+    <string name="current_balance">Current Balance</string>
+    <string name="minimum_payment">Minimum Payment</string>
+    <string name="full_balance">Full Balance</string>
+    <string name="due_date">Due Date</string>
+    <string name="payment_type">Payment Type</string>
+    <string name="minimum">Minimum</string>
+    <string name="partial">Partial</string>
+    <string name="full">Full</string>
+    <string name="custom_amount">Custom Amount</string>
+    <string name="processing_fee">Processing Fee</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="make_payment">Make Payment</string>
+    
+    <!-- Loan Repayment -->
+    <string name="loan_repayment">Loan Repayment</string>
+    <string name="loan_balance">Loan Balance</string>
+    <string name="monthly_payment">Monthly Payment</string>
+    <string name="remaining_balance">Remaining Balance</string>
+    <string name="next_due_date">Next Due Date</string>
+    
+    <!-- Profile Screen -->
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+    <string name="feedback">Feedback</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="donate">Donate</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="logout">Logout</string>
+    
+    <!-- Notifications -->
+    <string name="notifications">Notifications</string>
+    <string name="mark_all_read">Mark All as Read</string>
+    <string name="payment_received">Payment Received</string>
+    <string name="card_transaction">Card Transaction</string>
+    <string name="special_offer">Special Offer</string>
+    <string name="security_alert">Security Alert</string>
+    <string name="account_update">Account Update</string>
+    
+    <!-- Crypto -->
+    <string name="crypto_trading">Crypto Trading</string>
+    <string name="bitcoin">Bitcoin</string>
+    <string name="ethereum">Ethereum</string>
+    <string name="buy">Buy</string>
+    <string name="sell">Sell</string>
+    
+    <!-- Bank Products -->
+    <string name="apply_for_card">Apply for Card</string>
+    <string name="apply_for_loan">Apply for Loan</string>
+    
+    <!-- Feedback -->
+    <string name="feedback_type">Feedback Type</string>
+    <string name="subject">Subject</string>
+    <string name="message">Message</string>
+    <string name="submit_feedback">Submit Feedback</string>
+    
+    <!-- Organizations -->
+    <string name="organizations">Organizations</string>
+    <string name="donation_amount">Donation Amount</string>
+    <string name="donate_now">Donate Now</string>
+    
+    <!-- Redeem Points -->
+    <string name="available_points">Available Points</string>
+    <string name="redeem_to_account">Redeem to Account</string>
+    <string name="redeem_now">Redeem Now</string>
+    
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="refresh">Refresh</string>
+    
+    <!-- Validation Messages -->
+    <string name="error_required">This field is required</string>
+    <string name="error_invalid_email">Please enter a valid email</string>
+    <string name="error_invalid_phone">Please enter a valid phone number</string>
+    <string name="error_invalid_amount">Please enter a valid amount</string>
+    <string name="error_minimum_amount">Amount must be at least $1.00</string>
+    <string name="error_maximum_amount">Amount cannot exceed $10,000</string>
+    <string name="error_card_number">Card number must be 16 digits</string>
+    <string name="error_otp_length">OTP must be 6 digits</string>
+    <string name="error_passcode_length">Passcode must be 6 digits</string>
+    <string name="error_account_number">Account number must be at least 8 digits</string>
+    <string name="error_name_length">Name must be at least 2 characters</string>
+    
+    <!-- Success Messages -->
+    <string name="success_card_unlocked">Card unlocked successfully</string>
+    <string name="success_loan_unlocked">Loan unlocked successfully</string>
+    <string name="success_payment_sent">Payment sent successfully</string>
+    <string name="success_feedback_submitted">Feedback submitted successfully</string>
+    <string name="success_donation_made">Donation made successfully</string>
+    <string name="success_points_redeemed">Points redeemed successfully</string>
 </resources>
