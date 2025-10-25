@@ -39,7 +39,7 @@ fun MainNavigationScreen(
                         currentRoute != "privacyPolicy" && currentRoute != "termsConditions" && currentRoute != "redeemPoints" &&
                         currentRoute != "organizations" && currentRoute != "donation" && currentRoute != "cardRepayment" && 
                         currentRoute != "loanRepayment" && currentRoute != "cryptoTrading" && currentRoute != "settings" && 
-                        currentRoute != "contactUs") {
+                        currentRoute != "contactUs" && currentRoute != "utilityPayment") {
                 MainBottomNavigationBar(
                     currentTab = currentTab,
                     onTabSelected = { tab ->
@@ -119,8 +119,7 @@ fun MainNavigationScreen(
                         navController.navigate("redeemPoints")
                     },
                     onUtilityBillClick = { billId ->
-                        // Handle utility bill click - could navigate to bill payment screen
-                        // For now, just show a placeholder
+                        navController.navigate("utilityPayment/$billId")
                     }
                 )
             }
@@ -358,11 +357,11 @@ fun MainNavigationScreen(
                     }
                 )
             }
-            composable("cardRepayment/{cardId}") { backStackEntry ->
-                currentRoute = "cardRepayment"
-                val cardId = backStackEntry.arguments?.getString("cardId") ?: "card_1"
-                CardRepaymentScreen(
-                    cardId = cardId,
+            composable("utilityPayment/{billId}") { backStackEntry ->
+                currentRoute = "utilityPayment"
+                val billId = backStackEntry.arguments?.getString("billId") ?: "unknown"
+                UtilityPaymentScreen(
+                    billId = billId,
                     onBackClick = {
                         navController.popBackStack()
                     },
