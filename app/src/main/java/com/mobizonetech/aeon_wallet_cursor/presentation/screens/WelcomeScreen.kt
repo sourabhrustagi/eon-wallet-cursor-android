@@ -16,14 +16,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
 import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.WelcomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun WelcomeScreen(
-    viewModel: WelcomeViewModel = viewModel()
+    viewModel: WelcomeViewModel = hiltViewModel()
 ) {
     val slides by viewModel.slides.collectAsState()
 
