@@ -2,6 +2,48 @@
     <!-- App Name -->
     <string name="app_name">AEON Wallet</string>
     
+    <!-- Welcome Screen -->
+    <string name="slide_0_title">Welcome to Aeon Wallet</string>
+    <string name="slide_0_description">Your secure gateway to digital finance. Manage your money with confidence and ease.</string>
+    <string name="slide_0_feature_0">Bank-level security</string>
+    <string name="slide_0_feature_1">Instant transactions</string>
+    <string name="slide_0_feature_2">24/7 support</string>
+    
+    <string name="slide_1_title">Secure &amp; Fast</string>
+    <string name="slide_1_description">Send and receive money instantly with military-grade encryption protecting your transactions.</string>
+    <string name="slide_1_feature_0">End-to-end encryption</string>
+    <string name="slide_1_feature_1">Instant transfers</string>
+    <string name="slide_1_feature_2">Fraud protection</string>
+    
+    <string name="slide_2_title">Crypto Trading</string>
+    <string name="slide_2_description">Trade cryptocurrencies with zero fees and real-time market data at your fingertips.</string>
+    <string name="slide_2_feature_0">Zero trading fees</string>
+    <string name="slide_2_feature_1">Real-time prices</string>
+    <string name="slide_2_feature_2">Multiple cryptocurrencies</string>
+    
+    <string name="slide_3_title">Smart Analytics</string>
+    <string name="slide_3_description">Track your spending, set budgets, and get insights to make smarter financial decisions.</string>
+    <string name="slide_3_feature_0">Spending insights</string>
+    <string name="slide_3_feature_1">Budget tracking</string>
+    <string name="slide_3_feature_2">Financial reports</string>
+    
+    <string name="slide_4_title">Ready to Start?</string>
+    <string name="slide_4_description">Join thousands of users who trust Aeon Wallet for their digital finance needs.</string>
+    <string name="slide_4_feature_0">Quick setup in minutes</string>
+    <string name="slide_4_feature_1">No hidden fees</string>
+    <string name="slide_4_feature_2">Global accessibility</string>
+    
+    <!-- Welcome Icons -->
+    <string name="slide_0_icon">₿</string>
+    <string name="slide_1_icon">🔒</string>
+    <string name="slide_2_icon">📈</string>
+    <string name="slide_3_icon">📊</string>
+    <string name="slide_4_icon">🚀</string>
+    
+    <!-- Welcome Screen Buttons -->
+    <string name="welcome_skip">Skip</string>
+    <string name="welcome_next">Next</string>
+    
     <!-- Navigation -->
     <string name="nav_home">Cards</string>
     <string name="nav_loans">Loans</string>
@@ -23,6 +65,8 @@
     <string name="select_card_type">Select card type</string>
     <string name="btn_continue">Continue</string>
     <string name="back">Back</string>
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
     
     <string name="otp_title">Verify OTP</string>
     <string name="otp_subtitle">We sent a verification code to</string>
@@ -64,6 +108,10 @@
     
     <!-- Home Screen -->
     <string name="home_welcome">Welcome back, %1$s!</string>
+    <string name="welcome_back">Welcome back,</string>
+    <string name="my_cards">My Cards</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="apply_card">Apply Card</string>
     <string name="promotions">Promotions</string>
     <string name="bank_products">Bank Products</string>
     <string name="redeem_points">Redeem Points</string>
