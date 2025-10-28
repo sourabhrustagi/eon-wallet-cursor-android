@@ -196,7 +196,7 @@ private fun ErrorState(error: String?) {
  * @param modifier Optional modifier for customization
  */
 @Composable
-private fun PageIndicators(
+internal fun PageIndicators(
     pageCount: Int,
     currentPage: Int,
     modifier: Modifier = Modifier
@@ -390,7 +390,7 @@ fun WelcomeSlide(
  * @param slide Slide containing icon data
  */
 @Composable
-private fun WelcomeIcon(slide: WelcomeSlide) {
+internal fun WelcomeIcon(slide: WelcomeSlide) {
     Card(
         modifier = Modifier.size(Constants.ICON_SIZE.dp),
         shape = RoundedCornerShape(Constants.CARD_CORNER_RADIUS.dp),
@@ -421,7 +421,7 @@ private fun WelcomeIcon(slide: WelcomeSlide) {
  * @param title Title text to display
  */
 @Composable
-private fun WelcomeTitle(title: String) {
+internal fun WelcomeTitle(title: String) {
     Text(
         text = title,
         fontSize = Constants.TEXT_SIZE_LARGE.sp,
@@ -438,7 +438,7 @@ private fun WelcomeTitle(title: String) {
  * @param description Description text to display
  */
 @Composable
-private fun WelcomeDescription(description: String) {
+internal fun WelcomeDescription(description: String) {
     Text(
         text = description,
         fontSize = Constants.TEXT_SIZE_NORMAL.sp,
@@ -455,7 +455,7 @@ private fun WelcomeDescription(description: String) {
  * @param features List of feature strings to display
  */
 @Composable
-private fun WelcomeFeatures(features: List<String>) {
+internal fun WelcomeFeatures(features: List<String>) {
     val checkmark = stringResource(R.string.welcome_checkmark)
     
     features.forEach { feature ->
