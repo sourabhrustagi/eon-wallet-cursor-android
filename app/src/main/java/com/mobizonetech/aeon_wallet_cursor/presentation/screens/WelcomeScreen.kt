@@ -17,6 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +27,7 @@ import com.mobizonetech.aeon_wallet_cursor.R
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
 import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.WelcomeUiState
 import com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel.WelcomeViewModel
+import com.mobizonetech.aeon_wallet_cursor.ui.theme.AeonwalletcursorTheme
 import com.mobizonetech.aeon_wallet_cursor.util.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -470,6 +474,546 @@ private fun WelcomeFeatures(features: List<String>) {
                 text = feature,
                 fontSize = Constants.TEXT_SIZE_NORMAL.sp,
                 color = Color.White.copy(alpha = Constants.ALPHA_SEMI_TRANSPARENT)
+            )
+        }
+    }
+}
+
+// =============================================================================
+// Preview Functions
+// =============================================================================
+
+/**
+ * Preview parameter provider for WelcomeSlide
+ */
+class WelcomeSlidePreviewProvider : PreviewParameterProvider<WelcomeSlide> {
+    override val values = sequenceOf(
+        WelcomeSlide(
+            id = 0,
+            title = "Welcome to Aeon Wallet",
+            description = "Your secure gateway to digital finance. Manage your money with confidence and ease.",
+            icon = "₿",
+            iconBackgroundColor = 0xFF6200EE,
+            features = listOf(
+                "Bank-level security",
+                "Instant transactions",
+                "24/7 support"
+            )
+        ),
+        WelcomeSlide(
+            id = 1,
+            title = "Secure & Fast",
+            description = "Send and receive money instantly with military-grade encryption protecting your transactions.",
+            icon = "🔒",
+            iconBackgroundColor = 0xFFB00020,
+            features = listOf(
+                "End-to-end encryption",
+                "Instant transfers",
+                "Fraud protection"
+            )
+        ),
+        WelcomeSlide(
+            id = 2,
+            title = "Crypto Trading",
+            description = "Trade cryptocurrencies with zero fees and real-time market data at your fingertips.",
+            icon = "📈",
+            iconBackgroundColor = 0xFF03DAC6,
+            features = listOf(
+                "Zero trading fees",
+                "Real-time prices",
+                "Multiple cryptocurrencies"
+            )
+        )
+    )
+}
+
+/**
+ * Preview for LoadingState
+ */
+@Preview(
+    name = "Loading State - Light",
+    showBackground = true,
+    backgroundColor = 0xFF6200EE
+)
+@Preview(
+    name = "Loading State - Dark",
+    showBackground = true,
+    backgroundColor = 0xFF3700B3,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun LoadingStatePreview() {
+    AeonwalletcursorTheme {
+        LoadingState()
+    }
+}
+
+/**
+ * Preview for ErrorState
+ */
+@Preview(
+    name = "Error State - With Message",
+    showBackground = true
+)
+@Composable
+private fun ErrorStatePreview() {
+    AeonwalletcursorTheme {
+        ErrorState(error = "Failed to load welcome slides. Please try again.")
+    }
+}
+
+/**
+ * Preview for ErrorState with null error
+ */
+@Preview(
+    name = "Error State - Default Message",
+    showBackground = true
+)
+@Composable
+private fun ErrorStateDefaultPreview() {
+    AeonwalletcursorTheme {
+        ErrorState(error = null)
+    }
+}
+
+/**
+ * Preview for PageIndicators
+ */
+@Preview(
+    name = "Page Indicators - First Page",
+    showBackground = true
+)
+@Composable
+private fun PageIndicatorsFirstPagePreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(16.dp)
+        ) {
+            PageIndicators(
+                pageCount = 5,
+                currentPage = 0
+            )
+        }
+    }
+}
+
+/**
+ * Preview for PageIndicators - Middle page
+ */
+@Preview(
+    name = "Page Indicators - Middle Page",
+    showBackground = true
+)
+@Composable
+private fun PageIndicatorsMiddlePagePreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(16.dp)
+        ) {
+            PageIndicators(
+                pageCount = 5,
+                currentPage = 2
+            )
+        }
+    }
+}
+
+/**
+ * Preview for PageIndicators - Last page
+ */
+@Preview(
+    name = "Page Indicators - Last Page",
+    showBackground = true
+)
+@Composable
+private fun PageIndicatorsLastPagePreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(16.dp)
+        ) {
+            PageIndicators(
+                pageCount = 5,
+                currentPage = 4
+            )
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeSlide with different slides
+ */
+@Preview(
+    name = "Welcome Slide - First",
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+private fun WelcomeSlideFirstPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(Constants.GRADIENT_START),
+                            Color(Constants.GRADIENT_END)
+                        )
+                    )
+                )
+        ) {
+            WelcomeSlide(
+                slide = WelcomeSlide(
+                    id = 0,
+                    title = "Welcome to Aeon Wallet",
+                    description = "Your secure gateway to digital finance. Manage your money with confidence and ease.",
+                    icon = "₿",
+                    iconBackgroundColor = 0xFF6200EE,
+                    features = listOf(
+                        "Bank-level security",
+                        "Instant transactions",
+                        "24/7 support"
+                    )
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeSlide - Crypto Trading
+ */
+@Preview(
+    name = "Welcome Slide - Crypto",
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+private fun WelcomeSlideCryptoPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(Constants.GRADIENT_START),
+                            Color(Constants.GRADIENT_END)
+                        )
+                    )
+                )
+        ) {
+            WelcomeSlide(
+                slide = WelcomeSlide(
+                    id = 2,
+                    title = "Crypto Trading",
+                    description = "Trade cryptocurrencies with zero fees and real-time market data at your fingertips.",
+                    icon = "📈",
+                    iconBackgroundColor = 0xFF03DAC6,
+                    features = listOf(
+                        "Zero trading fees",
+                        "Real-time prices",
+                        "Multiple cryptocurrencies"
+                    )
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeIcon
+ */
+@Preview(
+    name = "Welcome Icon - Bitcoin",
+    showBackground = true
+)
+@Composable
+private fun WelcomeIconBitcoinPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            WelcomeIcon(
+                slide = WelcomeSlide(
+                    id = 0,
+                    title = "Welcome",
+                    description = "Description",
+                    icon = "₿",
+                    iconBackgroundColor = 0xFF6200EE,
+                    features = emptyList()
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeIcon - Lock
+ */
+@Preview(
+    name = "Welcome Icon - Lock",
+    showBackground = true
+)
+@Composable
+private fun WelcomeIconLockPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            WelcomeIcon(
+                slide = WelcomeSlide(
+                    id = 1,
+                    title = "Secure",
+                    description = "Description",
+                    icon = "🔒",
+                    iconBackgroundColor = 0xFFB00020,
+                    features = emptyList()
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeTitle
+ */
+@Preview(
+    name = "Welcome Title",
+    showBackground = true
+)
+@Composable
+private fun WelcomeTitlePreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(16.dp)
+        ) {
+            WelcomeTitle(title = "Welcome to Aeon Wallet")
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeDescription
+ */
+@Preview(
+    name = "Welcome Description",
+    showBackground = true
+)
+@Composable
+private fun WelcomeDescriptionPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(16.dp)
+        ) {
+            WelcomeDescription(
+                description = "Your secure gateway to digital finance. Manage your money with confidence and ease."
+            )
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeFeatures
+ */
+@Preview(
+    name = "Welcome Features",
+    showBackground = true
+)
+@Composable
+private fun WelcomeFeaturesPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(Constants.GRADIENT_START))
+                .padding(16.dp)
+        ) {
+            WelcomeFeatures(
+                features = listOf(
+                    "Bank-level security",
+                    "Instant transactions",
+                    "24/7 support"
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for full WelcomeScreen with multiple states
+ */
+@Preview(
+    name = "Welcome Slide - Parameterized",
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+private fun WelcomeSlideParameterizedPreview(
+    @PreviewParameter(WelcomeSlidePreviewProvider::class) slide: WelcomeSlide
+) {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(Constants.GRADIENT_START),
+                            Color(Constants.GRADIENT_END)
+                        )
+                    )
+                )
+        ) {
+            WelcomeSlide(slide = slide)
+        }
+    }
+}
+
+/**
+ * Preview for WelcomeSlide in Dark Mode
+ */
+@Preview(
+    name = "Welcome Slide - Dark Mode",
+    showBackground = true,
+    showSystemUi = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun WelcomeSlideDarkPreview() {
+    AeonwalletcursorTheme(darkTheme = true) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(Constants.GRADIENT_START),
+                            Color(Constants.GRADIENT_END)
+                        )
+                    )
+                )
+        ) {
+            WelcomeSlide(
+                slide = WelcomeSlide(
+                    id = 0,
+                    title = "Welcome to Aeon Wallet",
+                    description = "Your secure gateway to digital finance. Manage your money with confidence and ease.",
+                    icon = "₿",
+                    iconBackgroundColor = 0xFF6200EE,
+                    features = listOf(
+                        "Bank-level security",
+                        "Instant transactions",
+                        "24/7 support"
+                    )
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for different screen sizes
+ */
+@Preview(
+    name = "Welcome Slide - Small Screen",
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 640
+)
+@Composable
+private fun WelcomeSlideSmallScreenPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(Constants.GRADIENT_START),
+                            Color(Constants.GRADIENT_END)
+                        )
+                    )
+                )
+        ) {
+            WelcomeSlide(
+                slide = WelcomeSlide(
+                    id = 0,
+                    title = "Welcome to Aeon Wallet",
+                    description = "Your secure gateway to digital finance. Manage your money with confidence and ease.",
+                    icon = "₿",
+                    iconBackgroundColor = 0xFF6200EE,
+                    features = listOf(
+                        "Bank-level security",
+                        "Instant transactions",
+                        "24/7 support"
+                    )
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Preview for tablet/large screen
+ */
+@Preview(
+    name = "Welcome Slide - Tablet",
+    showBackground = true,
+    widthDp = 800,
+    heightDp = 1280
+)
+@Composable
+private fun WelcomeSlideTabletPreview() {
+    AeonwalletcursorTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(Constants.GRADIENT_START),
+                            Color(Constants.GRADIENT_END)
+                        )
+                    )
+                )
+        ) {
+            WelcomeSlide(
+                slide = WelcomeSlide(
+                    id = 0,
+                    title = "Welcome to Aeon Wallet",
+                    description = "Your secure gateway to digital finance. Manage your money with confidence and ease.",
+                    icon = "₿",
+                    iconBackgroundColor = 0xFF6200EE,
+                    features = listOf(
+                        "Bank-level security",
+                        "Instant transactions",
+                        "24/7 support"
+                    )
+                )
             )
         }
     }
