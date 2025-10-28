@@ -84,6 +84,13 @@ android {
         shaders = false
     }
     
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+            isIncludeAndroidResources = true
+        }
+    }
+    
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
