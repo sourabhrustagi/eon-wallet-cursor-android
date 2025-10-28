@@ -1,5 +1,10 @@
 package com.mobizonetech.aeon_wallet_cursor.presentation.screens
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.mobizonetech.aeon_wallet_cursor.ui.theme.AeonwalletcursorTheme
@@ -106,31 +111,30 @@ class WelcomeScreenStateComponentsTest {
 
     @Test
     fun pageIndicators_updatingCurrentPage_recomposes() {
-        // Given
-        var currentPage = 0
-        
+        // Given - Use mutableStateOf for reactive updates
         composeTestRule.setContent {
+            var currentPage by remember { mutableStateOf(0) }
+            
             AeonwalletcursorTheme {
-                PageIndicators(
-                    pageCount = 5,
-                    currentPage = currentPage
-                )
+                Column {
+                    PageIndicators(
+                        pageCount = 5,
+                        currentPage = currentPage
+                    )
+                    
+                    // Hidden button to trigger state change for testing
+                    Button(
+                        onClick = { currentPage = 2 },
+                        modifier = Modifier.testTag("update_button")
+                    ) {
+                        Text("Update")
+                    }
+                }
             }
         }
 
-        // When - Update current page
-        composeTestRule.runOnIdle {
-            currentPage = 2
-        }
-
-        composeTestRule.setContent {
-            AeonwalletcursorTheme {
-                PageIndicators(
-                    pageCount = 5,
-                    currentPage = currentPage
-                )
-            }
-        }
+        // When - Trigger page update
+        composeTestRule.onNodeWithTag("update_button").performClick()
 
         // Then - Should recompose without crashing
         composeTestRule.waitForIdle()
@@ -247,28 +251,33 @@ class WelcomeScreenStateComponentsTest {
 
     @Test
     fun pageIndicators_rapidPageChanges_handlesCorrectly() {
-        // Given
-        var currentPage = 0
-        
+        // Given - Use mutableStateOf for reactive updates
         composeTestRule.setContent {
+            var currentPage by remember { mutableStateOf(0) }
+            
             AeonwalletcursorTheme {
-                PageIndicators(
-                    pageCount = 10,
-                    currentPage = currentPage
-                )
+                Column {
+                    PageIndicators(
+                        pageCount = 10,
+                        currentPage = currentPage
+                    )
+                    
+                    // Buttons to simulate rapid page changes
+                    repeat(10) { page ->
+                        Button(
+                            onClick = { currentPage = page },
+                            modifier = Modifier.testTag("page_button_$page")
+                        ) {
+                            Text("Page $page")
+                        }
+                    }
+                }
             }
         }
 
         // When - Simulate rapid page changes
         repeat(10) { page ->
-            composeTestRule.setContent {
-                AeonwalletcursorTheme {
-                    PageIndicators(
-                        pageCount = 10,
-                        currentPage = page
-                    )
-                }
-            }
+            composeTestRule.onNodeWithTag("page_button_$page").performClick()
             composeTestRule.waitForIdle()
         }
 
@@ -298,16 +307,31 @@ class WelcomeScreenStateComponentsTest {
 
     @Test
     fun pageIndicators_repeatedRecompositions_doesNotLeak() {
-        // Given - Test for memory leaks with repeated recompositions
-        repeat(100) { index ->
-            composeTestRule.setContent {
-                AeonwalletcursorTheme {
+        // Given - Use mutableStateOf for reactive updates
+        composeTestRule.setContent {
+            var currentPage by remember { mutableStateOf(0) }
+            
+            AeonwalletcursorTheme {
+                Column {
                     PageIndicators(
                         pageCount = 5,
-                        currentPage = index % 5
+                        currentPage = currentPage
                     )
+                    
+                    // Button to trigger repeated recompositions
+                    Button(
+                        onClick = { currentPage = (currentPage + 1) % 5 },
+                        modifier = Modifier.testTag("cycle_button")
+                    ) {
+                        Text("Cycle")
+                    }
                 }
             }
+        }
+
+        // When - Trigger many recompositions
+        repeat(100) {
+            composeTestRule.onNodeWithTag("cycle_button").performClick()
         }
 
         // Then - Should complete without memory issues
