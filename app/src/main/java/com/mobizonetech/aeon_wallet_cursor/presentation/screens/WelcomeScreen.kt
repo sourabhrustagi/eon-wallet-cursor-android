@@ -26,14 +26,30 @@ fun WelcomeScreen(
     viewModel: WelcomeViewModel = hiltViewModel()
 ) {
     val slides by viewModel.slides.collectAsState()
+    val currentPage by viewModel.currentPage.collectAsState()
+    val isOnLastPage by viewModel.isOnLastPage.collectAsState()
 
     if (slides.isEmpty()) {
         // Show loading or empty state
         return
     }
 
-    val pagerState = rememberPagerState(pageCount = { slides.size })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { slides.size })
     val coroutineScope = rememberCoroutineScope()
+
+    // Sync pager with ViewModel current page
+    LaunchedEffect(currentPage) {
+        if (pagerState.currentPage != currentPage) {
+            pagerState.animateScrollToPage(currentPage)
+        }
+    }
+
+    // Update ViewModel when pager changes
+    LaunchedEffect(pagerState.currentPage) {
+        if (pagerState.currentPage != currentPage) {
+            viewModel.onPageChanged(pagerState.currentPage)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -58,7 +74,7 @@ fun WelcomeScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 slides.forEachIndexed { index, _ ->
-                    val isSelected = pagerState.currentPage == index
+                    val isSelected = currentPage == index
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
@@ -96,9 +112,10 @@ fun WelcomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (pagerState.currentPage < slides.size - 1) {
+                    if (viewModel.canNavigateSkip()) {
                         TextButton(
                             onClick = { 
+                                viewModel.onSkipClick()
                                 coroutineScope.launch {
                                     pagerState.animateScrollToPage(slides.size - 1)
                                 }
@@ -110,11 +127,12 @@ fun WelcomeScreen(
                         Spacer(modifier = Modifier.width(48.dp))
                     }
 
-                    if (pagerState.currentPage < slides.size - 1) {
+                    if (viewModel.canNavigateNext()) {
                         Button(
                             onClick = {
+                                viewModel.onNextClick()
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    pagerState.animateScrollToPage(viewModel.currentPage.value)
                                 }
                             },
                             shape = RoundedCornerShape(16.dp),
@@ -130,9 +148,9 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Get Started Button (only on last slide)
-                if (pagerState.currentPage == slides.size - 1) {
+                if (isOnLastPage) {
                     Button(
-                        onClick = { },
+                        onClick = { viewModel.onGetStartedClick() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -153,7 +171,7 @@ fun WelcomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedButton(
-                        onClick = { },
+                        onClick = { viewModel.onSignInClick() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
