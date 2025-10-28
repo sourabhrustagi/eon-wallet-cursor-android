@@ -43,6 +43,13 @@
     <!-- Welcome Screen Buttons -->
     <string name="welcome_skip">Skip</string>
     <string name="welcome_next">Next</string>
+    <string name="welcome_get_started">Get Started</string>
+    <string name="welcome_sign_in">Sign In</string>
+    
+    <!-- Welcome Screen Messages -->
+    <string name="welcome_loading">Loading...</string>
+    <string name="welcome_error_no_slides">No slides available</string>
+    <string name="welcome_checkmark">✓</string>
     
     <!-- Navigation -->
     <string name="nav_home">Cards</string>

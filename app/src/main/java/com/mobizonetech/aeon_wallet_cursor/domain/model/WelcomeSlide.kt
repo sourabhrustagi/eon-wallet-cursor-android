@@ -1,5 +1,14 @@
 package com.mobizonetech.aeon_wallet_cursor.domain.model
 
+/**
+ * Data class representing a welcome/onboarding slide
+ * @param id Unique identifier for the slide
+ * @param title Slide title
+ * @param description Slide description
+ * @param icon Emoji or icon representation
+ * @param iconBackgroundColor Color of the icon background (hex color as Long)
+ * @param features List of feature bullet points
+ */
 data class WelcomeSlide(
     val id: Int,
     val title: String,

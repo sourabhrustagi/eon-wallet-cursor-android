@@ -15,33 +15,102 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Enable vector drawable support for API < 21
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+        
+        // ProGuard optimization flags for release builds
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro"
+        )
     }
 
     buildTypes {
-        release {
+        debug {
+            // Debug-specific configuration
+            isDebuggable = true
             isMinifyEnabled = false
+            isShrinkResources = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
+        
+        release {
+            // Enable code shrinking, obfuscation, and optimization
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
+            
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            
+            // Signing configuration should be added for production
+            // signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        
+        // Enable desugaring for newer Java APIs on older Android versions
+        isCoreLibraryDesugaringEnabled = true
     }
+    
     kotlinOptions {
         jvmTarget = "11"
+        
+        // Enable experimental Kotlin compiler features for better performance
+        freeCompilerArgs += listOf(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
+        )
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+        // Disable unused features to improve build performance
+        aidl = false
+        renderScript = false
+        resValues = false
+        shaders = false
+    }
+    
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
+    }
+    
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/LICENSE.txt"
+            excludes += "/META-INF/NOTICE"
+            excludes += "/META-INF/NOTICE.txt"
+        }
+    }
+    
+    lint {
+        enable += listOf("Interoperability")
+        checkReleaseBuilds = true
+        abortOnError = false
     }
 }
 
 dependencies {
+    // Java 8+ API desugaring support for older Android versions
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
