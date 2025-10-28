@@ -290,7 +290,7 @@ class WelcomeScreenTest {
     // =============================================================================
 
     @Test
-    fun welcomeSlide_differentSlides_displayCorrectContent() {
+    fun welcomeSlide_firstSlide_displaysCorrectContent() {
         // Given - First slide
         val slide1 = mockSlide.copy(
             title = "First Slide",
@@ -308,7 +308,10 @@ class WelcomeScreenTest {
         composeTestRule.onNodeWithText("First Slide").assertIsDisplayed()
         composeTestRule.onNodeWithText("First Description").assertIsDisplayed()
         composeTestRule.onNodeWithText("🔒").assertIsDisplayed()
+    }
 
+    @Test
+    fun welcomeSlide_secondSlide_displaysCorrectContent() {
         // Given - Second slide
         val slide2 = mockSlide.copy(
             title = "Second Slide",
@@ -329,22 +332,63 @@ class WelcomeScreenTest {
     }
 
     @Test
-    fun welcomeSlide_withDifferentIcons_displaysCorrectly() {
+    fun welcomeSlide_withBitcoinIcon_displaysCorrectly() {
         // Given
-        val icons = listOf("₿", "🔒", "📈", "📊", "🚀")
+        val slide = mockSlide.copy(icon = "₿")
         
-        icons.forEach { icon ->
-            val slide = mockSlide.copy(icon = icon)
-            
-            composeTestRule.setContent {
-                AeonwalletcursorTheme {
-                    WelcomeSlide(slide = slide)
-                }
+        composeTestRule.setContent {
+            AeonwalletcursorTheme {
+                WelcomeSlide(slide = slide)
             }
-
-            // Then
-            composeTestRule.onNodeWithText(icon).assertIsDisplayed()
         }
+
+        // Then
+        composeTestRule.onNodeWithText("₿").assertIsDisplayed()
+    }
+
+    @Test
+    fun welcomeSlide_withLockIcon_displaysCorrectly() {
+        // Given
+        val slide = mockSlide.copy(icon = "🔒")
+        
+        composeTestRule.setContent {
+            AeonwalletcursorTheme {
+                WelcomeSlide(slide = slide)
+            }
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("🔒").assertIsDisplayed()
+    }
+
+    @Test
+    fun welcomeSlide_withChartIcon_displaysCorrectly() {
+        // Given
+        val slide = mockSlide.copy(icon = "📈")
+        
+        composeTestRule.setContent {
+            AeonwalletcursorTheme {
+                WelcomeSlide(slide = slide)
+            }
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("📈").assertIsDisplayed()
+    }
+
+    @Test
+    fun welcomeSlide_withRocketIcon_displaysCorrectly() {
+        // Given
+        val slide = mockSlide.copy(icon = "🚀")
+        
+        composeTestRule.setContent {
+            AeonwalletcursorTheme {
+                WelcomeSlide(slide = slide)
+            }
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("🚀").assertIsDisplayed()
     }
 
     // =============================================================================
