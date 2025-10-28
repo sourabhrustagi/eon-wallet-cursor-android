@@ -115,8 +115,7 @@ class WelcomeRepositoryImplTest {
     @Test
     fun `getWelcomeSlides returns Error when resources throw exception`() = runTest {
         // Given
-        val exceptionMessage = "Resource not found"
-        every { context.resources } throws Resources.NotFoundException(exceptionMessage)
+        every { context.resources } throws Resources.NotFoundException()
 
         // When
         val result = repository.getWelcomeSlides()
@@ -125,7 +124,7 @@ class WelcomeRepositoryImplTest {
         assertThat(result).isInstanceOf(Result.Error::class.java)
         
         val error = result as Result.Error
-        assertThat(error.message).contains(exceptionMessage)
+        assertThat(error.message).isEqualTo("Unknown error occurred while loading slides")
         assertThat(error.throwable).isInstanceOf(Resources.NotFoundException::class.java)
     }
 
@@ -143,7 +142,7 @@ class WelcomeRepositoryImplTest {
         assertThat(result).isInstanceOf(Result.Error::class.java)
         
         val error = result as Result.Error
-        assertThat(error.message).isNotEmpty()
+        assertThat(error.message).isEqualTo(exceptionMessage)
         assertThat(error.throwable).isInstanceOf(RuntimeException::class.java)
     }
 
