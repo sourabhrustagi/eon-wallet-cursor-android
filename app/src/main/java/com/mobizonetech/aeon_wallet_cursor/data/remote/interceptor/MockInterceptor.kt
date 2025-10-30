@@ -34,6 +34,9 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
             path.contains("config/settings") -> {
                 createMockResponse(chain, getMockAppSettingsJson())
             }
+            path.contains("promotions") -> {
+                createMockResponse(chain, getMockPromotionsJson())
+            }
             else -> {
                 // Pass through for unknown endpoints
                 chain.proceed(request)
@@ -171,6 +174,15 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
                 }
               }
             }
+        """.trimIndent()
+    }
+
+    private fun getMockPromotionsJson(): String {
+        return """
+            {"success":true,"message":null,"data":[
+              {"id":"p1","title":"Welcome Bonus","description":"Get 10% cashback","imageUrl":null,"validUntil":null},
+              {"id":"p2","title":"Zero Fees","description":"No fees this week","imageUrl":null,"validUntil":null}
+            ]}
         """.trimIndent()
     }
 

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.mobizonetech.aeon_wallet_cursor.presentation.common.WelcomeEvent
 
 /**
  * UI State for Welcome Screen
@@ -101,6 +102,21 @@ class WelcomeViewModel @Inject constructor(
         // Track screen view
         analytics.trackScreenView("Welcome Screen")
         
+        loadDataParallel()
+    }
+
+    fun onEvent(event: WelcomeEvent) {
+        when (event) {
+            is WelcomeEvent.PageChanged -> onPageChanged(event.index)
+            WelcomeEvent.Next -> onNextClick()
+            WelcomeEvent.Skip -> onSkipClick()
+            WelcomeEvent.GetStarted -> onGetStartedClick()
+            WelcomeEvent.SignIn -> onSignInClick()
+            WelcomeEvent.Retry -> reload()
+        }
+    }
+
+    private fun reload() {
         loadDataParallel()
     }
 

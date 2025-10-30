@@ -10,7 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.mobizonetech.aeon_wallet_cursor.presentation.screens.WelcomeScreen
+import com.mobizonetech.aeon_wallet_cursor.presentation.navigation.AppNavigation
 import com.mobizonetech.aeon_wallet_cursor.ui.theme.AeonwalletcursorTheme
 import com.mobizonetech.aeon_wallet_cursor.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    WelcomeScreen()
+                    AppNavigation()
                 }
             }
         }
@@ -94,12 +94,12 @@ class MainActivity : ComponentActivity() {
 )
 @Composable
 private fun MainActivityPreview() {
-    AeonwalletcursorTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            WelcomeScreen()
-        }
-    }
+            AeonwalletcursorTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    com.mobizonetech.aeon_wallet_cursor.presentation.navigation.AppNavigation()
+                }
+            }
 }

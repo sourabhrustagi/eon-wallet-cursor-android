@@ -1,6 +1,9 @@
 package com.mobizonetech.aeon_wallet_cursor
 
 import android.app.Application
+import androidx.work.Configuration
+import androidx.hilt.work.HiltWorkerFactory
+import javax.inject.Inject
 import com.mobizonetech.aeon_wallet_cursor.util.Logger
 import dagger.hilt.android.HiltAndroidApp
 
@@ -21,7 +24,8 @@ import dagger.hilt.android.HiltAndroidApp
  * - Avoid storing mutable global state here
  */
 @HiltAndroidApp
-class AeonWalletApplication : Application() {
+class AeonWalletApplication : Application(), Configuration.Provider {
+    @Inject lateinit var workerFactory: HiltWorkerFactory
     
     /**
      * Called when the application is created
@@ -38,6 +42,11 @@ class AeonWalletApplication : Application() {
         // - Notification channels
         // - App preferences
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 
     companion object {
         private const val TAG = "AeonWalletApp"

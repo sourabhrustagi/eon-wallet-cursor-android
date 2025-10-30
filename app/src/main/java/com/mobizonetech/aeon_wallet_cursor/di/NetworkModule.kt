@@ -10,6 +10,11 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import com.mobizonetech.aeon_wallet_cursor.data.network.NetworkMonitor
+import com.mobizonetech.aeon_wallet_cursor.data.network.NetworkMonitorImpl
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import com.mobizonetech.aeon_wallet_cursor.data.remote.api.PromotionsApiService
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -22,10 +27,8 @@ import javax.inject.Singleton
 object NetworkModule {
 
     /**
-     * Base URL for API
-     * In production, this would come from BuildConfig or environment
+     * Base URL for API comes from BuildConfig (per flavor)
      */
-    private const val BASE_URL = "https://api.aeonwallet.com/"
 
     /**
      * Provide MockInterceptor
@@ -79,7 +82,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -102,5 +105,17 @@ object NetworkModule {
     fun provideAppSettingsApiService(retrofit: Retrofit): com.mobizonetech.aeon_wallet_cursor.data.remote.api.AppSettingsApiService {
         return retrofit.create(com.mobizonetech.aeon_wallet_cursor.data.remote.api.AppSettingsApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun providePromotionsApiService(retrofit: Retrofit): PromotionsApiService {
+        return retrofit.create(PromotionsApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkMonitor(
+        @ApplicationContext context: Context
+    ): NetworkMonitor = NetworkMonitorImpl(context)
 }
 

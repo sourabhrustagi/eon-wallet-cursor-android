@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    id("jacoco")
 }
 
 android {
@@ -54,6 +55,29 @@ android {
             
             // Signing configuration should be added for production
             // signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
+    flavorDimensions += listOf("environment")
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            buildConfigField("String", "BASE_URL", "\"https://dev.api.aeonwallet.com/\"")
+            buildConfigField("Boolean", "ENABLE_LOGGING", "true")
+        }
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            buildConfigField("String", "BASE_URL", "\"https://staging.api.aeonwallet.com/\"")
+            buildConfigField("Boolean", "ENABLE_LOGGING", "true")
+        }
+        create("prod") {
+            dimension = "environment"
+            buildConfigField("String", "BASE_URL", "\"https://api.aeonwallet.com/\"")
+            buildConfigField("Boolean", "ENABLE_LOGGING", "false")
         }
     }
     compileOptions {
@@ -112,6 +136,35 @@ android {
         checkReleaseBuilds = true
         abortOnError = false
     }
+}
+
+// Jacoco coverage configuration
+tasks.withType<Test> {
+    finalizedBy(tasks.named("jacocoTestReport"))
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.named("testDebugUnitTest"))
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*"
+    )
+    val javaTree = fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) { exclude(fileFilter) }
+    val kotlinTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) { exclude(fileFilter) }
+    classDirectories.setFrom(files(javaTree, kotlinTree))
+    sourceDirectories.setFrom(files("src/main/java"))
+    executionData.setFrom(fileTree(layout.buildDirectory) {
+        include("**/jacoco/testDebugUnitTest.exec")
+        include("**/outputs/unit_test_code_coverage/**/testDebugUnitTest.exec")
+    })
 }
 
 dependencies {
@@ -182,6 +235,12 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.3.1")
     implementation("androidx.camera:camera-lifecycle:1.3.1")
     implementation("androidx.camera:camera-view:1.3.1")
+    
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    // Hilt WorkManager integration
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
     
     // Testing
     testImplementation(libs.junit)

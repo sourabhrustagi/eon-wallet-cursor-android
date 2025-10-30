@@ -47,8 +47,11 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun WelcomeScreen(
-    viewModel: WelcomeViewModel = hiltViewModel()
+    viewModel: WelcomeViewModel = hiltViewModel(),
+    onGetStarted: () -> Unit = {},
+    onSignIn: () -> Unit = {}
 ) {
+    // Callbacks passed from navigation
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = 0, 
@@ -303,7 +306,10 @@ private fun BottomActionButtons(
         // Get Started Button (only on last slide)
         if (uiState.isOnLastPage) {
             Button(
-                onClick = { viewModel.onGetStartedClick() },
+                onClick = {
+                    viewModel.onGetStartedClick()
+//                    onGetStarted()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Constants.BUTTON_HEIGHT.dp),
@@ -326,7 +332,10 @@ private fun BottomActionButtons(
             Spacer(modifier = Modifier.height(Constants.SPACING_MEDIUM.dp))
 
             OutlinedButton(
-                onClick = { viewModel.onSignInClick() },
+                onClick = {
+                    viewModel.onSignInClick()
+//                    onSignIn()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Constants.BUTTON_HEIGHT.dp),
