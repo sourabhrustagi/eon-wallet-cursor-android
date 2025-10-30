@@ -2,7 +2,7 @@
 
 ## Overview
 
-Comprehensive mock analytics system for tracking user events and behavior in the AEON Wallet application.
+Comprehensive mock analytics system for tracking user events and behavior in the EON Wallet application.
 
 ---
 
@@ -469,7 +469,7 @@ fun verifyEventParameters(eventName: String, expectedParams: Map<String, Any>) {
 
 ```kotlin
 // In Application class
-class AeonWalletApplication : Application() {
+class EonWalletApplication : Application() {
     @Inject
     lateinit var analytics: Analytics
     
@@ -631,7 +631,7 @@ When integrated with real analytics:
 📊 Analytics Event: welcome_slide_changed
   Parameters:
     • slide_index: 0
-    • slide_title: Welcome to Aeon Wallet
+    • slide_title: Welcome to Eon Wallet
     • total_slides: 5
   Timestamp: 1699876545123
   Total Events: 2

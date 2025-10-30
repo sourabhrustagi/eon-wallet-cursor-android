@@ -1,4 +1,4 @@
-# AEON Wallet - Comprehensive Application Documentation
+# EON Wallet - Comprehensive Application Documentation
 
 ## Table of Contents
 1. [Application Overview](#application-overview)
@@ -18,7 +18,7 @@
 
 ## Application Overview
 
-**AEON Wallet** is a comprehensive digital banking application built with Android Jetpack Compose, providing users with a complete financial management experience. The app offers secure banking services, cryptocurrency trading, utility bill payments, and personalized financial tools.
+**EON Wallet** is a comprehensive digital banking application built with Android Jetpack Compose, providing users with a complete financial management experience. The app offers secure banking services, cryptocurrency trading, utility bill payments, and personalized financial tools.
 
 ### Key Statistics
 - **Platform**: Android (API 24+)
@@ -541,7 +541,7 @@ android {
 
 ## Conclusion
 
-AEON Wallet represents a comprehensive digital banking solution with modern Android development practices. The application provides secure, user-friendly financial services while maintaining high code quality and architectural standards.
+EON Wallet represents a comprehensive digital banking solution with modern Android development practices. The application provides secure, user-friendly financial services while maintaining high code quality and architectural standards.
 
 ### Key Achievements
 - ✅ Complete onboarding flow with security

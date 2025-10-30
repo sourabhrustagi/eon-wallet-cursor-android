@@ -1,0 +1,46 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+reports:
+  xml:
+    enabled: true
+  html:
+    enabled: true
+
+style:
+  MagicNumber:
+    active: true
+    ignoreAnnotation: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreEnums: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+  WildcardImport:
+    active: false
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 60
+  LongParameterList:
+    active: true
+    functionThreshold: 7
+
+performance:
+  SpreadOperator:
+    active: false
+
+potential-bugs:
+  LateinitUsage:
+    active: false
+
+

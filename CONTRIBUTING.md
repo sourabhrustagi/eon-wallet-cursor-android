@@ -1,6 +1,6 @@
-# Contributing to AEON Wallet Android
+# Contributing to EON Wallet Android
 
-Thank you for your interest in contributing to AEON Wallet! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to EON Wallet! This document provides guidelines and instructions for contributing to the project.
 
 ---
 
@@ -576,7 +576,7 @@ By contributing, you agree that your contributions will be licensed under the pr
 
 ---
 
-Thank you for contributing to AEON Wallet! 🙏
+Thank you for contributing to EON Wallet! 🙏
 
 ---
 

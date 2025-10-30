@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.Cache
 import retrofit2.Retrofit
 import com.mobizonetech.aeon_wallet_cursor.data.network.NetworkMonitor
 import com.mobizonetech.aeon_wallet_cursor.data.network.NetworkMonitorImpl
@@ -67,6 +68,7 @@ object NetworkModule {
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .cache(Cache(directory = java.io.File("cache_okhttp"), maxSize = 10L * 1024 * 1024))
             .addInterceptor(mockInterceptor) // Add mock interceptor first
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)

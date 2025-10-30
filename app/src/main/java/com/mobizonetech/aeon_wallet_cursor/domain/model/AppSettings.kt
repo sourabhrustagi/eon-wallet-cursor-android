@@ -1,10 +1,13 @@
 package com.mobizonetech.aeon_wallet_cursor.domain.model
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Domain model for App Settings
  * 
  * Contains app configuration and feature flags
  */
+@Immutable
 data class AppSettings(
     val appVersion: String,
     val minimumAppVersion: String,
@@ -18,6 +21,7 @@ data class AppSettings(
 /**
  * Welcome screen configuration
  */
+@Immutable
 data class WelcomeScreenConfig(
     val autoAdvanceEnabled: Boolean = false,
     val autoAdvanceDelayMs: Long = 3000L,
@@ -29,6 +33,7 @@ data class WelcomeScreenConfig(
 /**
  * Feature flags for the app
  */
+@Immutable
 data class FeatureFlags(
     val cryptoTradingEnabled: Boolean = true,
     val biometricAuthEnabled: Boolean = true,
@@ -40,6 +45,7 @@ data class FeatureFlags(
 /**
  * API endpoints configuration
  */
+@Immutable
 data class ApiEndpoints(
     val baseUrl: String,
     val supportUrl: String,

@@ -1,6 +1,6 @@
-# Deployment Guide - AEON Wallet Android
+# Deployment Guide - EON Wallet Android
 
-Complete guide for building, testing, and deploying the AEON Wallet Android application.
+Complete guide for building, testing, and deploying the EON Wallet Android application.
 
 ---
 
@@ -289,7 +289,7 @@ app/build/outputs/mapping/release/
    - Set up store listing
 
 3. **Complete Store Listing**
-   - App name: "AEON Wallet"
+   - App name: "EON Wallet"
    - Short description (80 chars)
    - Full description (4000 chars)
    - Screenshots (phone, tablet)

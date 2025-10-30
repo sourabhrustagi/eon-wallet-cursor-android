@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     id("jacoco")
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 android {
@@ -167,6 +169,35 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     })
 }
 
+// Detekt configuration
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files(rootProject.file("detekt.yml")))
+    autoCorrect = true
+}
+
+// Spotless configuration
+spotless {
+    kotlin {
+        target("src/**/*.kt")
+        ktlint("0.50.0").editorConfigOverride(mapOf(
+            "ktlint_standard_no-wildcard-imports" to "disabled",
+            "indent_size" to "4",
+            "insert_final_newline" to "true"
+        ))
+        licenseHeader("""/*
+ * Copyright (c) AEON
+ */
+"""
+        ).updateYearWithLatest(true)
+    }
+    kotlinGradle {
+        target("**/*.gradle.kts")
+        ktlint("0.50.0")
+    }
+}
+
 dependencies {
     // Java 8+ API desugaring support for older Android versions
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
@@ -249,6 +280,7 @@ dependencies {
     testImplementation("io.mockk:mockk-android:1.13.8")
     testImplementation("com.google.truth:truth:1.1.5")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the API integration for the AEON Wallet Android application, including the implementation of a **Mock Interceptor** for development and testing.
+This document describes the API integration for the EON Wallet Android application, including the implementation of a **Mock Interceptor** for development and testing.
 
 ---
 

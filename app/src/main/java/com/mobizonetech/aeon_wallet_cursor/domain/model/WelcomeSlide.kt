@@ -1,5 +1,7 @@
 package com.mobizonetech.aeon_wallet_cursor.domain.model
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Data class representing a welcome/onboarding slide
  * @param id Unique identifier for the slide
@@ -9,6 +11,7 @@ package com.mobizonetech.aeon_wallet_cursor.domain.model
  * @param iconBackgroundColor Color of the icon background (hex color as Long)
  * @param features List of feature bullet points
  */
+@Immutable
 data class WelcomeSlide(
     val id: Int,
     val title: String,

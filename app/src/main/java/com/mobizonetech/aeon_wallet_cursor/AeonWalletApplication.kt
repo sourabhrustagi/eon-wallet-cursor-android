@@ -6,6 +6,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import javax.inject.Inject
 import com.mobizonetech.aeon_wallet_cursor.util.Logger
 import dagger.hilt.android.HiltAndroidApp
+import android.os.StrictMode
 
 /**
  * Application class for AEON Wallet
@@ -34,6 +35,20 @@ class AeonWalletApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         Logger.i(TAG, "AEON Wallet Application initialized")
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
+            StrictMode.setVmPolicy(
+                StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
+        }
         
         // Additional initialization can be added here:
         // - Crash reporting setup (e.g., Firebase Crashlytics)

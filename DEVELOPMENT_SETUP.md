@@ -1,6 +1,6 @@
 # Development Environment Setup
 
-Complete guide for setting up your development environment for AEON Wallet Android.
+Complete guide for setting up your development environment for EON Wallet Android.
 
 ---
 

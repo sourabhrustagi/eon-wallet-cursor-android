@@ -1,4 +1,4 @@
-# AEON Wallet Android - Complete Project Summary
+# EON Wallet Android - Complete Project Summary
 
 **Version**: 1.0.0  
 **Last Updated**: October 30, 2025  
@@ -8,7 +8,7 @@
 
 ## 📱 Project Overview
 
-AEON Wallet is a modern Android cryptocurrency wallet application built with:
+EON Wallet is a modern Android cryptocurrency wallet application built with:
 - **Jetpack Compose** for UI
 - **Clean Architecture** for structure
 - **MVVM Pattern** for presentation
@@ -499,7 +499,7 @@ Best Practices:
 
 ## 🎉 Conclusion
 
-AEON Wallet Android is a **production-ready**, **well-tested**, and **thoroughly documented** application following **industry best practices** and **clean architecture principles**.
+EON Wallet Android is a **production-ready**, **well-tested**, and **thoroughly documented** application following **industry best practices** and **clean architecture principles**.
 
 **Status**: ✅ **PRODUCTION READY**
 

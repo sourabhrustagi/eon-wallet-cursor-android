@@ -75,7 +75,7 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
               "data": [
                 {
                   "id": 0,
-                  "title": "Welcome to Aeon Wallet",
+                  "title": "Welcome to Eon Wallet",
                   "description": "Your secure gateway to digital finance. Manage your money with confidence and ease.",
                   "icon": "₿",
                   "icon_background_color": "#6200EE",
@@ -124,7 +124,7 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
                 {
                   "id": 4,
                   "title": "Ready to Start?",
-                  "description": "Join thousands of users who trust Aeon Wallet for their digital finance needs.",
+                  "description": "Join thousands of users who trust Eon Wallet for their digital finance needs.",
                   "icon": "🚀",
                   "icon_background_color": "#6200EE",
                   "features": [

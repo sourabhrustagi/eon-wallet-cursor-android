@@ -1,4 +1,4 @@
-# AEON Wallet - Android Application
+# EON Wallet - Android Application
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-purple.svg)](https://kotlinlang.org)
 [![Android](https://img.shields.io/badge/Android-8.0+-green.svg)](https://developer.android.com)

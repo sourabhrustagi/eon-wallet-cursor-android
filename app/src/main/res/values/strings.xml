@@ -1,9 +1,9 @@
 <resources>
     <!-- App Name -->
-    <string name="app_name">AEON Wallet</string>
+    <string name="app_name">EON Wallet</string>
     
     <!-- Welcome Screen -->
-    <string name="slide_0_title">Welcome to Aeon Wallet</string>
+    <string name="slide_0_title">Welcome to Eon Wallet</string>
     <string name="slide_0_description">Your secure gateway to digital finance. Manage your money with confidence and ease.</string>
     <string name="slide_0_feature_0">Bank-level security</string>
     <string name="slide_0_feature_1">Instant transactions</string>
@@ -28,7 +28,7 @@
     <string name="slide_3_feature_2">Financial reports</string>
     
     <string name="slide_4_title">Ready to Start?</string>
-    <string name="slide_4_description">Join thousands of users who trust Aeon Wallet for their digital finance needs.</string>
+    <string name="slide_4_description">Join thousands of users who trust Eon Wallet for their digital finance needs.</string>
     <string name="slide_4_feature_0">Quick setup in minutes</string>
     <string name="slide_4_feature_1">No hidden fees</string>
     <string name="slide_4_feature_2">Global accessibility</string>
@@ -60,7 +60,7 @@
     <string name="nav_profile">Profile</string>
     
     <!-- Auth Screens -->
-    <string name="welcome_title">Welcome to AEON Wallet</string>
+    <string name="welcome_title">Welcome to EON Wallet</string>
     <string name="welcome_subtitle">Your digital financial companion</string>
     <string name="get_started">Get Started</string>
     <string name="sign_in">Sign In</string>

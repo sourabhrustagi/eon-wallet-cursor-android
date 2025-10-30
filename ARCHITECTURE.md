@@ -1,4 +1,4 @@
-# AEON Wallet - Architecture Documentation
+# EON Wallet - Architecture Documentation
 
 **Version**: 1.0.0  
 **Last Updated**: October 30, 2025  
@@ -22,7 +22,7 @@
 
 ## 🎯 Overview
 
-AEON Wallet follows **Clean Architecture** principles with **MVVM** pattern for presentation layer, ensuring:
+EON Wallet follows **Clean Architecture** principles with **MVVM** pattern for presentation layer, ensuring:
 
 - ✅ **Separation of Concerns** - Each layer has specific responsibilities
 - ✅ **Testability** - Independent testing of business logic
