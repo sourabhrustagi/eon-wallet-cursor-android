@@ -8,33 +8,13 @@ import com.mobizonetech.aeon_wallet_cursor.util.Logger
 import dagger.hilt.android.HiltAndroidApp
 import android.os.StrictMode
 
-/**
- * Application class for AEON Wallet
- * 
- * This class is the entry point for the entire application.
- * It's annotated with @HiltAndroidApp to set up Hilt dependency injection.
- * 
- * Responsibilities:
- * - Initialize Hilt for dependency injection
- * - Perform one-time app initialization
- * - Configure app-wide settings
- * 
- * Best Practices:
- * - Keep onCreate() lightweight to avoid app startup delays
- * - Use background threads for heavy initialization
- * - Avoid storing mutable global state here
- */
 @HiltAndroidApp
-class AeonWalletApplication : Application(), Configuration.Provider {
+class EonWalletApplication : Application(), Configuration.Provider {
     @Inject lateinit var workerFactory: HiltWorkerFactory
-    
-    /**
-     * Called when the application is created
-     * Initializes app-wide configurations
-     */
+
     override fun onCreate() {
         super.onCreate()
-        Logger.i(TAG, "AEON Wallet Application initialized")
+        Logger.i(TAG, "EON Wallet Application initialized")
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
@@ -49,13 +29,6 @@ class AeonWalletApplication : Application(), Configuration.Provider {
                     .build()
             )
         }
-        
-        // Additional initialization can be added here:
-        // - Crash reporting setup (e.g., Firebase Crashlytics)
-        // - Analytics initialization
-        // - WorkManager setup
-        // - Notification channels
-        // - App preferences
     }
 
     override val workManagerConfiguration: Configuration
@@ -64,7 +37,8 @@ class AeonWalletApplication : Application(), Configuration.Provider {
             .build()
 
     companion object {
-        private const val TAG = "AeonWalletApp"
+        private const val TAG = "EonWalletApp"
     }
 }
+
 

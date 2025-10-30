@@ -146,7 +146,8 @@ tasks.withType<Test> {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
-    dependsOn(tasks.named("testDebugUnitTest"))
+    // Align with the 'devDebug' flavor/buildType
+    dependsOn(tasks.named("testDevDebugUnitTest"))
     reports {
         xml.required.set(true)
         html.required.set(true)
@@ -159,13 +160,13 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         "**/*Test*.*",
         "android/**/*.*"
     )
-    val javaTree = fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) { exclude(fileFilter) }
-    val kotlinTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) { exclude(fileFilter) }
+    val javaTree = fileTree(layout.buildDirectory.dir("intermediates/javac/devDebug/classes")) { exclude(fileFilter) }
+    val kotlinTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/devDebug")) { exclude(fileFilter) }
     classDirectories.setFrom(files(javaTree, kotlinTree))
     sourceDirectories.setFrom(files("src/main/java"))
     executionData.setFrom(fileTree(layout.buildDirectory) {
-        include("**/jacoco/testDebugUnitTest.exec")
-        include("**/outputs/unit_test_code_coverage/**/testDebugUnitTest.exec")
+        include("**/jacoco/testDevDebugUnitTest.exec")
+        include("**/outputs/unit_test_code_coverage/**/testDevDebugUnitTest.exec")
     })
 }
 

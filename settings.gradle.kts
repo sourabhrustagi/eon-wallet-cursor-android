@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Aeon-wallet-cursor"
+rootProject.name = "Eon-wallet-cursor"
 include(":app")
  

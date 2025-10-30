@@ -9,7 +9,7 @@ import com.mobizonetech.aeon_wallet_cursor.BuildConfig
  */
 object Logger {
     
-    private const val DEFAULT_TAG = "AeonWallet"
+    private const val DEFAULT_TAG = "EonWallet"
     private val isLoggingEnabled = BuildConfig.DEBUG
 
     /**

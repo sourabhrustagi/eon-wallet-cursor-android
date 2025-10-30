@@ -1,5 +1,5 @@
 # =============================================================================
-# AEON Wallet ProGuard Rules
+# EON Wallet ProGuard Rules
 # =============================================================================
 # These rules optimize and obfuscate the app for release builds while
 # maintaining functionality and proper stack traces for debugging.
@@ -182,7 +182,7 @@
 # =============================================================================
 
 # Keep Application class
--keep class com.mobizonetech.aeon_wallet_cursor.AeonWalletApplication { *; }
+-keep class com.mobizonetech.aeon_wallet_cursor.EonWalletApplication { *; }
 
 # Keep all Activities, Services, BroadcastReceivers
 -keep public class * extends android.app.Activity
