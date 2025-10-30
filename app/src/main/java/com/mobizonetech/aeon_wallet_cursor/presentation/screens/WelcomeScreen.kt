@@ -132,7 +132,7 @@ fun WelcomeScreen(
  * Shows a centered circular progress indicator
  */
 @Composable
-private fun LoadingState() {
+internal fun LoadingState() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -160,7 +160,7 @@ private fun LoadingState() {
  * @param error Error message to display, or null for default message
  */
 @Composable
-private fun ErrorState(error: String?) {
+internal fun ErrorState(error: String?) {
     val context = LocalContext.current
     val errorMessage = error ?: stringResource(R.string.welcome_error_no_slides)
     
