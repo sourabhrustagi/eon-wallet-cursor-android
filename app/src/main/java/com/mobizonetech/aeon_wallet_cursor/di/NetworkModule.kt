@@ -93,5 +93,14 @@ object NetworkModule {
     fun provideWelcomeApiService(retrofit: Retrofit): WelcomeApiService {
         return retrofit.create(WelcomeApiService::class.java)
     }
+
+    /**
+     * Provide AppSettingsApiService
+     */
+    @Provides
+    @Singleton
+    fun provideAppSettingsApiService(retrofit: Retrofit): com.mobizonetech.aeon_wallet_cursor.data.remote.api.AppSettingsApiService {
+        return retrofit.create(com.mobizonetech.aeon_wallet_cursor.data.remote.api.AppSettingsApiService::class.java)
+    }
 }
 

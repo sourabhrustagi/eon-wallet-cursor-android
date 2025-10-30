@@ -1,8 +1,11 @@
 package com.mobizonetech.aeon_wallet_cursor.di
 
 import android.content.Context
+import com.mobizonetech.aeon_wallet_cursor.data.remote.api.AppSettingsApiService
 import com.mobizonetech.aeon_wallet_cursor.data.remote.api.WelcomeApiService
+import com.mobizonetech.aeon_wallet_cursor.data.repository.AppSettingsRepositoryImpl
 import com.mobizonetech.aeon_wallet_cursor.data.repository.WelcomeRepositoryApiImpl
+import com.mobizonetech.aeon_wallet_cursor.domain.repository.AppSettingsRepository
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.WelcomeRepository
 import dagger.Module
 import dagger.Provides
@@ -44,5 +47,21 @@ object AppModule {
         apiService: WelcomeApiService
     ): WelcomeRepository {
         return WelcomeRepositoryApiImpl(apiService)
+    }
+
+    /**
+     * Provides AppSettingsRepository implementation
+     * 
+     * API-based implementation with mock interceptor
+     * 
+     * @param apiService API service for fetching app settings
+     * @return AppSettingsRepository instance
+     */
+    @Provides
+    @Singleton
+    fun provideAppSettingsRepository(
+        apiService: AppSettingsApiService
+    ): AppSettingsRepository {
+        return AppSettingsRepositoryImpl(apiService)
     }
 }

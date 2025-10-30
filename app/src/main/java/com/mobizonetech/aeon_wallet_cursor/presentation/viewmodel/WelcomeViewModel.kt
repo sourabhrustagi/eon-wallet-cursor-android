@@ -2,11 +2,20 @@ package com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobizonetech.aeon_wallet_cursor.data.analytics.Analytics
+import com.mobizonetech.aeon_wallet_cursor.data.analytics.AnalyticsEvent
+import com.mobizonetech.aeon_wallet_cursor.data.analytics.AnalyticsHelper.trackError
+import com.mobizonetech.aeon_wallet_cursor.data.analytics.AnalyticsHelper.trackScreenView
+import com.mobizonetech.aeon_wallet_cursor.data.analytics.AnalyticsHelper.trackSlideChange
+import com.mobizonetech.aeon_wallet_cursor.domain.model.AppSettings
+import com.mobizonetech.aeon_wallet_cursor.domain.model.DefaultAppSettings
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
+import com.mobizonetech.aeon_wallet_cursor.domain.usecase.GetAppSettingsUseCase
 import com.mobizonetech.aeon_wallet_cursor.domain.usecase.GetWelcomeSlidesUseCase
 import com.mobizonetech.aeon_wallet_cursor.domain.util.Result
 import com.mobizonetech.aeon_wallet_cursor.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,12 +31,16 @@ import javax.inject.Inject
  * @property currentPage Current page index in the pager
  * @property isLoading Whether data is being loaded
  * @property error Error message if any error occurred
+ * @property appSettings App settings and configuration
+ * @property isSettingsLoading Whether settings are being loaded
  */
 data class WelcomeUiState(
     val slides: List<WelcomeSlide> = emptyList(),
     val currentPage: Int = 0,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    val appSettings: AppSettings = DefaultAppSettings.default,
+    val isSettingsLoading: Boolean = true
 ) {
     /**
      * Check if user is on the last page
@@ -45,7 +58,13 @@ data class WelcomeUiState(
      * Check if skip button should be shown
      */
     val canNavigateSkip: Boolean
-        get() = currentPage < slides.size - 1
+        get() = currentPage < slides.size - 1 && appSettings.welcomeScreenConfig.showSkipButton
+    
+    /**
+     * Check if all data is loaded
+     */
+    val isAllDataLoaded: Boolean
+        get() = !isLoading && !isSettingsLoading
 }
 
 /**
@@ -56,53 +75,137 @@ data class WelcomeUiState(
  * - Unidirectional data flow
  * - Immutable UI state
  * - StateFlow for state management
+ * - Parallel API calls for performance
+ * - Analytics tracking for user events
  * 
  * @property getWelcomeSlidesUseCase Use case for retrieving welcome slides
+ * @property getAppSettingsUseCase Use case for retrieving app settings
+ * @property analytics Analytics service for event tracking
  */
 @HiltViewModel
 class WelcomeViewModel @Inject constructor(
-    private val getWelcomeSlidesUseCase: GetWelcomeSlidesUseCase
+    private val getWelcomeSlidesUseCase: GetWelcomeSlidesUseCase,
+    private val getAppSettingsUseCase: GetAppSettingsUseCase,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WelcomeUiState())
     val uiState: StateFlow<WelcomeUiState> = _uiState.asStateFlow()
+    
+    private var screenStartTime: Long = 0
 
     init {
         Logger.d(TAG, "WelcomeViewModel initialized")
-        loadSlides()
+        screenStartTime = System.currentTimeMillis()
+        
+        // Track screen view
+        analytics.trackScreenView("Welcome Screen")
+        
+        loadDataParallel()
     }
 
     /**
-     * Load welcome slides from use case
-     * Updates UI state based on result
+     * Load welcome slides and app settings in parallel
+     * Makes both API calls simultaneously for better performance
      */
-    private fun loadSlides() {
+    private fun loadDataParallel() {
         viewModelScope.launch {
-            Logger.d(TAG, "Loading welcome slides")
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            Logger.d(TAG, "Loading slides and settings in parallel")
+            _uiState.update { 
+                it.copy(
+                    isLoading = true, 
+                    isSettingsLoading = true,
+                    error = null
+                ) 
+            }
             
-            when (val result = getWelcomeSlidesUseCase()) {
+            // Launch both API calls in parallel using async
+            val slidesDeferred = async { getWelcomeSlidesUseCase() }
+            val settingsDeferred = async { getAppSettingsUseCase() }
+            
+            // Await both results
+            val slidesResult = slidesDeferred.await()
+            val settingsResult = settingsDeferred.await()
+            
+            Logger.d(TAG, "Both API calls completed")
+            
+            // Process slides result
+            when (slidesResult) {
                 is Result.Success -> {
-                    Logger.d(TAG, "Successfully loaded ${result.data.size} slides")
+                    Logger.d(TAG, "Successfully loaded ${slidesResult.data.size} slides")
                     _uiState.update { 
                         it.copy(
-                            slides = result.data,
-                            isLoading = false,
-                            error = null
+                            slides = slidesResult.data,
+                            isLoading = false
                         )
                     }
+                    
+                    // Track successful data load
+                    analytics.trackEvent(
+                        "slides_loaded",
+                        mapOf("slide_count" to slidesResult.data.size)
+                    )
                 }
                 is Result.Error -> {
-                    Logger.e(TAG, "Error loading slides: ${result.message}", result.throwable)
+                    Logger.e(TAG, "Error loading slides: ${slidesResult.message}", slidesResult.throwable)
                     _uiState.update { 
                         it.copy(
                             isLoading = false,
-                            error = result.message
+                            error = slidesResult.message
                         )
                     }
+                    
+                    // Track error
+                    analytics.trackError(
+                        errorMessage = slidesResult.message,
+                        source = "GetWelcomeSlidesUseCase"
+                    )
                 }
                 is Result.Loading -> {
-                    // Loading state already set
+                    // Already in loading state
+                }
+            }
+            
+            // Process settings result
+            when (settingsResult) {
+                is Result.Success -> {
+                    Logger.d(TAG, "Successfully loaded app settings")
+                    Logger.d(TAG, "Auto-advance: ${settingsResult.data.welcomeScreenConfig.autoAdvanceEnabled}")
+                    Logger.d(TAG, "Show skip: ${settingsResult.data.welcomeScreenConfig.showSkipButton}")
+                    _uiState.update { 
+                        it.copy(
+                            appSettings = settingsResult.data,
+                            isSettingsLoading = false
+                        )
+                    }
+                    
+                    // Track settings load
+                    analytics.trackEvent(
+                        AnalyticsEvent.SETTINGS_LOADED,
+                        mapOf(
+                            "app_version" to settingsResult.data.appVersion,
+                            "auto_advance_enabled" to settingsResult.data.welcomeScreenConfig.autoAdvanceEnabled
+                        )
+                    )
+                }
+                is Result.Error -> {
+                    Logger.e(TAG, "Error loading settings: ${settingsResult.message}", settingsResult.throwable)
+                    // Use default settings on error
+                    _uiState.update { 
+                        it.copy(
+                            appSettings = DefaultAppSettings.default,
+                            isSettingsLoading = false
+                        )
+                    }
+                    
+                    // Track error
+                    analytics.trackError(
+                        errorMessage = settingsResult.message,
+                        source = "GetAppSettingsUseCase"
+                    )
+                }
+                is Result.Loading -> {
+                    // Already in loading state
                 }
             }
         }
@@ -114,7 +217,18 @@ class WelcomeViewModel @Inject constructor(
      */
     fun onPageChanged(page: Int) {
         Logger.d(TAG, "Page changed to: $page")
+        val currentState = _uiState.value
         _uiState.update { it.copy(currentPage = page) }
+        
+        // Track slide change
+        if (currentState.slides.isNotEmpty() && page < currentState.slides.size) {
+            val slide = currentState.slides[page]
+            analytics.trackSlideChange(
+                slideIndex = page,
+                slideTitle = slide.title,
+                totalSlides = currentState.slides.size
+            )
+        }
     }
 
     /**
@@ -125,6 +239,16 @@ class WelcomeViewModel @Inject constructor(
         val currentState = _uiState.value
         if (currentState.canNavigateNext) {
             Logger.d(TAG, "Navigating to next page: ${currentState.currentPage + 1}")
+            
+            // Track next button click
+            analytics.trackEvent(
+                AnalyticsEvent.WELCOME_NEXT_CLICKED,
+                mapOf(
+                    AnalyticsEvent.PARAM_SLIDE_INDEX to currentState.currentPage,
+                    AnalyticsEvent.PARAM_TOTAL_SLIDES to currentState.slides.size
+                )
+            )
+            
             _uiState.update { 
                 it.copy(currentPage = it.currentPage + 1)
             }
@@ -139,6 +263,17 @@ class WelcomeViewModel @Inject constructor(
         val currentState = _uiState.value
         if (currentState.slides.isNotEmpty()) {
             Logger.d(TAG, "Skipping to last page: ${currentState.slides.size - 1}")
+            
+            // Track skip button click
+            analytics.trackEvent(
+                AnalyticsEvent.WELCOME_SKIP_CLICKED,
+                mapOf(
+                    AnalyticsEvent.PARAM_SLIDE_INDEX to currentState.currentPage,
+                    AnalyticsEvent.PARAM_TOTAL_SLIDES to currentState.slides.size,
+                    "skipped_slides" to (currentState.slides.size - 1 - currentState.currentPage)
+                )
+            )
+            
             _uiState.update { 
                 it.copy(currentPage = currentState.slides.size - 1)
             }
@@ -151,6 +286,28 @@ class WelcomeViewModel @Inject constructor(
      */
     fun onGetStartedClick() {
         Logger.d(TAG, "Get Started clicked")
+        
+        // Calculate time spent on welcome screen
+        val timeSpent = System.currentTimeMillis() - screenStartTime
+        
+        // Track get started click
+        analytics.trackEvent(
+            AnalyticsEvent.WELCOME_GET_STARTED_CLICKED,
+            mapOf(
+                AnalyticsEvent.PARAM_TIME_SPENT to timeSpent,
+                "slides_viewed" to (_uiState.value.currentPage + 1)
+            )
+        )
+        
+        // Track welcome flow completion
+        analytics.trackEvent(
+            AnalyticsEvent.WELCOME_COMPLETED,
+            mapOf(
+                AnalyticsEvent.PARAM_TIME_SPENT to timeSpent,
+                "completion_method" to "get_started"
+            )
+        )
+        
         // TODO: Handle get started logic - navigate to main screen
         // Consider using navigation component or callback
     }
@@ -161,6 +318,28 @@ class WelcomeViewModel @Inject constructor(
      */
     fun onSignInClick() {
         Logger.d(TAG, "Sign In clicked")
+        
+        // Calculate time spent on welcome screen
+        val timeSpent = System.currentTimeMillis() - screenStartTime
+        
+        // Track sign in click
+        analytics.trackEvent(
+            AnalyticsEvent.WELCOME_SIGN_IN_CLICKED,
+            mapOf(
+                AnalyticsEvent.PARAM_TIME_SPENT to timeSpent,
+                AnalyticsEvent.PARAM_SLIDE_INDEX to _uiState.value.currentPage
+            )
+        )
+        
+        // Track welcome flow completion
+        analytics.trackEvent(
+            AnalyticsEvent.WELCOME_COMPLETED,
+            mapOf(
+                AnalyticsEvent.PARAM_TIME_SPENT to timeSpent,
+                "completion_method" to "sign_in"
+            )
+        )
+        
         // TODO: Handle sign in logic - navigate to sign in screen
         // Consider using navigation component or callback
     }

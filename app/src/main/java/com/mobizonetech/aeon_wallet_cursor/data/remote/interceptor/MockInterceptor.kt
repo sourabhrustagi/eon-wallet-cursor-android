@@ -31,6 +31,9 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
             path.contains("onboarding/slides") -> {
                 createMockResponse(chain, getMockWelcomeSlidesJson())
             }
+            path.contains("config/settings") -> {
+                createMockResponse(chain, getMockAppSettingsJson())
+            }
             else -> {
                 // Pass through for unknown endpoints
                 chain.proceed(request)
@@ -128,6 +131,45 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
                   ]
                 }
               ]
+            }
+        """.trimIndent()
+    }
+
+    /**
+     * Mock JSON response for app settings
+     */
+    private fun getMockAppSettingsJson(): String {
+        return """
+            {
+              "success": true,
+              "message": "App settings fetched successfully",
+              "timestamp": ${System.currentTimeMillis()},
+              "data": {
+                "app_version": "1.0.0",
+                "minimum_app_version": "1.0.0",
+                "force_update_required": false,
+                "maintenance_mode": false,
+                "welcome_screen_config": {
+                  "auto_advance_enabled": true,
+                  "auto_advance_delay_ms": 5000,
+                  "show_skip_button": true,
+                  "animation_enabled": true,
+                  "analytics_enabled": true
+                },
+                "feature_flags": {
+                  "crypto_trading_enabled": true,
+                  "biometric_auth_enabled": true,
+                  "social_login_enabled": false,
+                  "dark_mode_enabled": true,
+                  "notifications_enabled": true
+                },
+                "api_endpoints": {
+                  "base_url": "https://api.aeonwallet.com/",
+                  "support_url": "https://support.aeonwallet.com/",
+                  "terms_url": "https://aeonwallet.com/terms",
+                  "privacy_url": "https://aeonwallet.com/privacy"
+                }
+              }
             }
         """.trimIndent()
     }
