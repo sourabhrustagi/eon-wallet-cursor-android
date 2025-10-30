@@ -130,12 +130,13 @@ fun WelcomeScreen(
 /**
  * Loading state composable
  * Shows a centered circular progress indicator
+ * 
+ * @param modifier Modifier for the loading state container (defaults to fillMaxSize)
  */
 @Composable
-internal fun LoadingState() {
+internal fun LoadingState(modifier: Modifier = Modifier.fillMaxSize()) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
