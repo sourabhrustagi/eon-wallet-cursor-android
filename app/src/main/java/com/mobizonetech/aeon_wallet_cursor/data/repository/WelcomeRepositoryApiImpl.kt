@@ -1,11 +1,13 @@
 package com.mobizonetech.aeon_wallet_cursor.data.repository
 
 import com.mobizonetech.aeon_wallet_cursor.data.remote.api.WelcomeApiService
+import com.mobizonetech.aeon_wallet_cursor.data.remote.dto.DtoValidator
 import com.mobizonetech.aeon_wallet_cursor.data.remote.mapper.WelcomeSlideMapper
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.WelcomeRepository
 import com.mobizonetech.aeon_wallet_cursor.domain.util.Result
 import com.mobizonetech.aeon_wallet_cursor.util.Logger
+import com.mobizonetech.aeon_wallet_cursor.util.PerformanceMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,12 +26,17 @@ class WelcomeRepositoryApiImpl @Inject constructor(
         try {
             Logger.d(TAG, "Fetching welcome slides from API")
             
-            val response = apiService.getWelcomeSlides()
+            val response = PerformanceMonitor.measure("getWelcomeSlides API") {
+                apiService.getWelcomeSlides()
+            }
             
             if (response.isSuccessful) {
                 val body = response.body()
                 
                 if (body != null && body.success) {
+                    // Validate response data
+                    DtoValidator.validateWelcomeSlidesResponse(body)
+                    
                     val domainSlides = WelcomeSlideMapper.mapToDomainList(body.data)
                     Logger.d(TAG, "Successfully fetched ${domainSlides.size} slides from API")
                     Result.Success(domainSlides)

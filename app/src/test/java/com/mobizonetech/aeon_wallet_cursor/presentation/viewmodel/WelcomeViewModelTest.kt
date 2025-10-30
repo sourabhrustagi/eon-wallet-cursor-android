@@ -1,7 +1,11 @@
 package com.mobizonetech.aeon_wallet_cursor.presentation.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.mobizonetech.aeon_wallet_cursor.data.analytics.MockAnalytics
+import com.mobizonetech.aeon_wallet_cursor.domain.model.AppSettings
+import com.mobizonetech.aeon_wallet_cursor.domain.model.DefaultAppSettings
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
+import com.mobizonetech.aeon_wallet_cursor.domain.usecase.GetAppSettingsUseCase
 import com.mobizonetech.aeon_wallet_cursor.domain.usecase.GetWelcomeSlidesUseCase
 import com.mobizonetech.aeon_wallet_cursor.domain.util.Result
 import com.google.common.truth.Truth.assertThat
@@ -25,6 +29,7 @@ import org.junit.Test
  * - Error scenarios
  * - Page navigation
  * - User actions (next, skip, get started, sign in)
+ * - Analytics tracking
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class WelcomeViewModelTest {
@@ -33,6 +38,8 @@ class WelcomeViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var getWelcomeSlidesUseCase: GetWelcomeSlidesUseCase
+    private lateinit var getAppSettingsUseCase: GetAppSettingsUseCase
+    private lateinit var mockAnalytics: MockAnalytics
     private lateinit var viewModel: WelcomeViewModel
     
     private val testDispatcher = StandardTestDispatcher()
@@ -41,6 +48,9 @@ class WelcomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         getWelcomeSlidesUseCase = mockk()
+        getAppSettingsUseCase = mockk()
+        mockAnalytics = MockAnalytics()
+        mockAnalytics.clearAll()
     }
 
     @After
@@ -51,10 +61,12 @@ class WelcomeViewModelTest {
     @Test
     fun `initial state is loading`() {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Loading
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
 
         // When
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
 
         // Then
         val state = viewModel.uiState.value
@@ -72,10 +84,12 @@ class WelcomeViewModelTest {
             createMockSlide(1),
             createMockSlide(2)
         )
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
 
         // When
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
@@ -90,10 +104,11 @@ class WelcomeViewModelTest {
     fun `loadSlides updates state with error result`() = runTest {
         // Given
         val errorMessage = "Failed to load slides"
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Error(errorMessage)
 
         // When
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
@@ -106,10 +121,11 @@ class WelcomeViewModelTest {
     @Test
     fun `loadSlides calls use case exactly once`() = runTest {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(emptyList())
 
         // When
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
@@ -119,8 +135,9 @@ class WelcomeViewModelTest {
     @Test
     fun `onPageChanged updates current page`() = runTest {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(listOf(createMockSlide(0)))
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -134,8 +151,9 @@ class WelcomeViewModelTest {
     fun `onNextClick increments current page when canNavigateNext is true`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1), createMockSlide(2))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.currentPage).isEqualTo(0)
@@ -151,8 +169,9 @@ class WelcomeViewModelTest {
     fun `onNextClick does not increment when on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onPageChanged(1) // Go to last page
@@ -173,8 +192,9 @@ class WelcomeViewModelTest {
             createMockSlide(2),
             createMockSlide(3)
         )
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.currentPage).isEqualTo(0)
@@ -189,8 +209,9 @@ class WelcomeViewModelTest {
     @Test
     fun `onSkipClick does nothing when slides are empty`() = runTest {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(emptyList())
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -204,8 +225,9 @@ class WelcomeViewModelTest {
     fun `isOnLastPage returns true when on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1), createMockSlide(2))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -219,8 +241,9 @@ class WelcomeViewModelTest {
     fun `isOnLastPage returns false when not on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1), createMockSlide(2))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -234,8 +257,9 @@ class WelcomeViewModelTest {
     fun `canNavigateNext returns true when not on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1), createMockSlide(2))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -249,8 +273,9 @@ class WelcomeViewModelTest {
     fun `canNavigateNext returns false when on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -264,8 +289,9 @@ class WelcomeViewModelTest {
     fun `canNavigateSkip returns true when not on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1), createMockSlide(2))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -279,8 +305,9 @@ class WelcomeViewModelTest {
     fun `canNavigateSkip returns false when on last page`() = runTest {
         // Given
         val mockSlides = listOf(createMockSlide(0), createMockSlide(1))
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -293,8 +320,9 @@ class WelcomeViewModelTest {
     @Test
     fun `onGetStartedClick does not crash`() = runTest {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(listOf(createMockSlide(0)))
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When/Then - should not throw exception
@@ -304,8 +332,9 @@ class WelcomeViewModelTest {
     @Test
     fun `onSignInClick does not crash`() = runTest {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(listOf(createMockSlide(0)))
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When/Then - should not throw exception
@@ -321,8 +350,9 @@ class WelcomeViewModelTest {
             createMockSlide(2),
             createMockSlide(3)
         )
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Success(mockSlides)
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -339,10 +369,11 @@ class WelcomeViewModelTest {
     @Test
     fun `error state preserves empty slides list`() = runTest {
         // Given
+        coEvery { getAppSettingsUseCase() } returns Result.Success(DefaultAppSettings.default)
         coEvery { getWelcomeSlidesUseCase() } returns Result.Error("Error occurred")
 
         // When
-        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase)
+        viewModel = WelcomeViewModel(getWelcomeSlidesUseCase, getAppSettingsUseCase, mockAnalytics)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
