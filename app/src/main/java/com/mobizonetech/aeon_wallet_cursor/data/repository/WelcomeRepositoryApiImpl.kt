@@ -3,6 +3,7 @@ package com.mobizonetech.aeon_wallet_cursor.data.repository
 import com.mobizonetech.aeon_wallet_cursor.data.remote.api.WelcomeApiService
 import com.mobizonetech.aeon_wallet_cursor.data.remote.dto.DtoValidator
 import com.mobizonetech.aeon_wallet_cursor.data.remote.mapper.WelcomeSlideMapper
+import com.mobizonetech.aeon_wallet_cursor.data.remote.retry.RetryPolicy
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.WelcomeRepository
 import com.mobizonetech.aeon_wallet_cursor.domain.util.Result
@@ -14,7 +15,12 @@ import javax.inject.Inject
 
 /**
  * API-based implementation of WelcomeRepository
- * Fetches welcome slides from remote API
+ * Fetches welcome slides from remote API with automatic retry on failure
+ * 
+ * Features:
+ * - Automatic retry on network errors
+ * - Exponential backoff between retries
+ * - Configurable retry attempts (default: 3)
  * 
  * @param apiService Retrofit API service
  */
@@ -24,10 +30,17 @@ class WelcomeRepositoryApiImpl @Inject constructor(
 
     override suspend fun getWelcomeSlides(): Result<List<WelcomeSlide>> = withContext(Dispatchers.IO) {
         try {
-            Logger.d(TAG, "Fetching welcome slides from API")
+            Logger.d(TAG, "Fetching welcome slides from API (with retry)")
             
-            val response = PerformanceMonitor.measure("getWelcomeSlides API") {
-                apiService.getWelcomeSlides()
+            // Execute API call with retry logic
+            val response = RetryPolicy.executeWithRetry(
+                maxRetries = 3,
+                initialDelayMs = 1000L,
+                maxDelayMs = 5000L
+            ) {
+                PerformanceMonitor.measure("getWelcomeSlides API") {
+                    apiService.getWelcomeSlides()
+                }
             }
             
             if (response.isSuccessful) {
@@ -51,7 +64,7 @@ class WelcomeRepositoryApiImpl @Inject constructor(
                 Result.Error(errorMessage)
             }
         } catch (e: Exception) {
-            Logger.e(TAG, "Error fetching slides from API", e)
+            Logger.e(TAG, "Error fetching slides from API after retries", e)
             Result.Error(
                 message = e.message ?: "Unknown error occurred while loading slides from API",
                 throwable = e

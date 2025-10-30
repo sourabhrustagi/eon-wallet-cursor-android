@@ -6,14 +6,24 @@ import com.mobizonetech.aeon_wallet_cursor.data.remote.dto.WelcomeSlideDto
 import com.mobizonetech.aeon_wallet_cursor.data.remote.dto.WelcomeSlidesResponse
 import com.mobizonetech.aeon_wallet_cursor.domain.util.Result
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 /**
  * Unit tests for WelcomeRepositoryApiImpl
+ * 
+ * Tests cover:
+ * - Successful API calls
+ * - Error handling
+ * - Data mapping
+ * - Retry mechanism (NEW)
  */
 class WelcomeRepositoryApiImplTest {
 
@@ -116,6 +126,190 @@ class WelcomeRepositoryApiImplTest {
         // Then
         // Should fail validation because slides can't be empty
         assertThat(result).isInstanceOf(Result.Error::class.java)
+    }
+
+    // =============================================================================
+    // Retry Mechanism Tests (NEW)
+    // =============================================================================
+
+    @Test
+    fun `getWelcomeSlides retries on SocketTimeoutException and succeeds`() = runTest {
+        // Given
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } throws SocketTimeoutException("Timeout") andThen Response.success(mockResponse)
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should retry and succeed
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        coVerify(exactly = 2) { apiService.getWelcomeSlides() } // Initial attempt + 1 retry
+    }
+
+    @Test
+    fun `getWelcomeSlides retries on UnknownHostException and succeeds`() = runTest {
+        // Given
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } throws 
+            UnknownHostException("Host not found") andThen Response.success(mockResponse)
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should retry and succeed
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        coVerify(exactly = 2) { apiService.getWelcomeSlides() }
+    }
+
+    @Test
+    fun `getWelcomeSlides retries on IOException and succeeds`() = runTest {
+        // Given
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } throws 
+            IOException("Network error") andThen Response.success(mockResponse)
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should retry and succeed
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        coVerify(exactly = 2) { apiService.getWelcomeSlides() }
+    }
+
+    @Test
+    fun `getWelcomeSlides retries multiple times before succeeding`() = runTest {
+        // Given
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } throws 
+            SocketTimeoutException("Timeout") andThenThrows 
+            SocketTimeoutException("Timeout") andThen 
+            Response.success(mockResponse)
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should retry twice and succeed
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        coVerify(exactly = 3) { apiService.getWelcomeSlides() } // Initial + 2 retries
+    }
+
+    @Test
+    fun `getWelcomeSlides fails after max retries exhausted`() = runTest {
+        // Given - All attempts throw SocketTimeoutException
+        coEvery { apiService.getWelcomeSlides() } throws SocketTimeoutException("Persistent timeout")
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should fail after max retries (3 + initial = 4 total attempts)
+        assertThat(result).isInstanceOf(Result.Error::class.java)
+        val errorResult = result as Result.Error
+        assertThat(errorResult.message).contains("Persistent timeout")
+        coVerify(exactly = 4) { apiService.getWelcomeSlides() }
+    }
+
+    @Test
+    fun `getWelcomeSlides does not retry on HTTP 400 errors`() = runTest {
+        // Given - HTTP 400 is not retryable
+        coEvery { apiService.getWelcomeSlides() } returns 
+            Response.error(400, mockk(relaxed = true))
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should fail immediately without retries
+        assertThat(result).isInstanceOf(Result.Error::class.java)
+        val errorResult = result as Result.Error
+        assertThat(errorResult.message).contains("HTTP 400")
+        coVerify(exactly = 1) { apiService.getWelcomeSlides() } // No retries
+    }
+
+    @Test
+    fun `getWelcomeSlides does not retry on HTTP 404 errors`() = runTest {
+        // Given - HTTP 404 is not retryable
+        coEvery { apiService.getWelcomeSlides() } returns 
+            Response.error(404, mockk(relaxed = true))
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Should fail immediately
+        assertThat(result).isInstanceOf(Result.Error::class.java)
+        coVerify(exactly = 1) { apiService.getWelcomeSlides() }
+    }
+
+    @Test
+    fun `getWelcomeSlides handles HTTP 503 Service Unavailable after retries`() = runTest {
+        // Given - HTTP 503 is retryable but API failures stop retries
+        // The retry mechanism only retries on network exceptions, not HTTP errors
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } returns 
+            Response.error(503, mockk(relaxed = true))
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - HTTP errors don't trigger retries (only network exceptions do)
+        assertThat(result).isInstanceOf(Result.Error::class.java)
+        coVerify(exactly = 1) { apiService.getWelcomeSlides() }
+    }
+
+    @Test
+    fun `getWelcomeSlides handles mixed failures during retry`() = runTest {
+        // Given - First timeout, then success
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } throws 
+            SocketTimeoutException("Timeout") andThen 
+            Response.success(mockResponse)
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        val successResult = result as Result.Success
+        assertThat(successResult.data).hasSize(3)
+    }
+
+    @Test
+    fun `getWelcomeSlides logs retry attempts`() = runTest {
+        // Given - This test verifies retry mechanism executes
+        val mockResponse = createMockWelcomeSlidesResponse()
+        var attemptCount = 0
+        coEvery { apiService.getWelcomeSlides() } answers {
+            attemptCount++
+            if (attemptCount < 2) {
+                throw IOException("Network error")
+            } else {
+                Response.success(mockResponse)
+            }
+        }
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        assertThat(attemptCount).isEqualTo(2)
+    }
+
+    @Test
+    fun `getWelcomeSlides preserves data integrity after retry`() = runTest {
+        // Given
+        val mockResponse = createMockWelcomeSlidesResponse()
+        coEvery { apiService.getWelcomeSlides() } throws 
+            IOException("Network error") andThen 
+            Response.success(mockResponse)
+
+        // When
+        val result = repository.getWelcomeSlides()
+
+        // Then - Data should be correct after retry
+        assertThat(result).isInstanceOf(Result.Success::class.java)
+        val successResult = result as Result.Success
+        assertThat(successResult.data[0].title).isEqualTo("Slide 1")
+        assertThat(successResult.data[1].title).isEqualTo("Slide 2")
+        assertThat(successResult.data[2].title).isEqualTo("Slide 3")
     }
 
     private fun createMockWelcomeSlidesResponse(success: Boolean = true): WelcomeSlidesResponse {

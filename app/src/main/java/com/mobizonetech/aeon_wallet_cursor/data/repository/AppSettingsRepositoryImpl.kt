@@ -3,6 +3,7 @@ package com.mobizonetech.aeon_wallet_cursor.data.repository
 import com.mobizonetech.aeon_wallet_cursor.data.remote.api.AppSettingsApiService
 import com.mobizonetech.aeon_wallet_cursor.data.remote.dto.DtoValidator
 import com.mobizonetech.aeon_wallet_cursor.data.remote.mapper.AppSettingsMapper
+import com.mobizonetech.aeon_wallet_cursor.data.remote.retry.RetryPolicy
 import com.mobizonetech.aeon_wallet_cursor.domain.model.AppSettings
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.AppSettingsRepository
 import com.mobizonetech.aeon_wallet_cursor.domain.util.Result
@@ -14,7 +15,12 @@ import javax.inject.Inject
 
 /**
  * API-based implementation of AppSettingsRepository
- * Fetches app settings from remote API
+ * Fetches app settings from remote API with automatic retry on failure
+ * 
+ * Features:
+ * - Automatic retry on network errors
+ * - Exponential backoff between retries
+ * - Configurable retry attempts (default: 3)
  * 
  * @param apiService Retrofit API service
  */
@@ -24,10 +30,17 @@ class AppSettingsRepositoryImpl @Inject constructor(
 
     override suspend fun getAppSettings(): Result<AppSettings> = withContext(Dispatchers.IO) {
         try {
-            Logger.d(TAG, "Fetching app settings from API")
+            Logger.d(TAG, "Fetching app settings from API (with retry)")
             
-            val response = PerformanceMonitor.measure("getAppSettings API") {
-                apiService.getAppSettings()
+            // Execute API call with retry logic
+            val response = RetryPolicy.executeWithRetry(
+                maxRetries = 3,
+                initialDelayMs = 1000L,
+                maxDelayMs = 5000L
+            ) {
+                PerformanceMonitor.measure("getAppSettings API") {
+                    apiService.getAppSettings()
+                }
             }
             
             if (response.isSuccessful) {
@@ -54,7 +67,7 @@ class AppSettingsRepositoryImpl @Inject constructor(
                 Result.Error(errorMessage)
             }
         } catch (e: Exception) {
-            Logger.e(TAG, "Error fetching app settings from API", e)
+            Logger.e(TAG, "Error fetching app settings from API after retries", e)
             Result.Error(
                 message = e.message ?: "Unknown error occurred while loading app settings",
                 throwable = e
