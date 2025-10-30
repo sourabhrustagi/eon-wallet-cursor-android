@@ -161,7 +161,6 @@ internal fun LoadingState() {
  */
 @Composable
 internal fun ErrorState(error: String?) {
-    val context = LocalContext.current
     val errorMessage = error ?: stringResource(R.string.welcome_error_no_slides)
     
     Box(
