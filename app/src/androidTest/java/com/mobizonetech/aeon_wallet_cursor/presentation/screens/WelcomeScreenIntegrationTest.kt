@@ -4,9 +4,6 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.mobizonetech.aeon_wallet_cursor.MainActivity
 import com.mobizonetech.aeon_wallet_cursor.domain.model.WelcomeSlide
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,20 +16,14 @@ import org.junit.Test
  * - User interactions
  * - State management
  * - Loading and error states
+ * 
+ * Note: These tests use the real application with actual dependency injection.
+ * They test the full integration of UI, ViewModel, and data layer.
  */
-@HiltAndroidTest
 class WelcomeScreenIntegrationTest {
 
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 1)
+    @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
-
-    @Before
-    fun setup() {
-        hiltRule.inject()
-    }
 
     // =============================================================================
     // Loading State Tests
