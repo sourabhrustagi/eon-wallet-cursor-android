@@ -158,14 +158,17 @@ internal fun LoadingState() {
  * Shows an error message to the user
  * 
  * @param error Error message to display, or null for default message
+ * @param modifier Modifier for the error state container (defaults to fillMaxSize)
  */
 @Composable
-internal fun ErrorState(error: String?) {
+internal fun ErrorState(
+    error: String?,
+    modifier: Modifier = Modifier.fillMaxSize()
+) {
     val errorMessage = error ?: stringResource(R.string.welcome_error_no_slides)
     
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(

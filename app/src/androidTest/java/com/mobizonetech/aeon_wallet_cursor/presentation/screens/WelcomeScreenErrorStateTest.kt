@@ -1,6 +1,8 @@
 package com.mobizonetech.aeon_wallet_cursor.presentation.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -357,9 +359,19 @@ class WelcomeScreenErrorStateTest {
         // Given
         composeTestRule.setContent {
             AeonwalletcursorTheme {
-                Column {
-                    ErrorState(error = "Error 1")
-                    ErrorState(error = "Error 2")
+                Column(modifier = Modifier.fillMaxSize()) {
+                    ErrorState(
+                        error = "Error 1",
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    )
+                    ErrorState(
+                        error = "Error 2",
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    )
                 }
             }
         }
