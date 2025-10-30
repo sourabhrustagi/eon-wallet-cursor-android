@@ -1,7 +1,8 @@
 package com.mobizonetech.aeon_wallet_cursor.di
 
 import android.content.Context
-import com.mobizonetech.aeon_wallet_cursor.data.repository.WelcomeRepositoryImpl
+import com.mobizonetech.aeon_wallet_cursor.data.remote.api.WelcomeApiService
+import com.mobizonetech.aeon_wallet_cursor.data.repository.WelcomeRepositoryApiImpl
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.WelcomeRepository
 import dagger.Module
 import dagger.Provides
@@ -31,14 +32,17 @@ object AppModule {
 
     /**
      * Provides WelcomeRepository implementation
-     * @param context Application context
+     * 
+     * Now using API-based implementation with mock interceptor
+     * 
+     * @param apiService API service for fetching slides
      * @return WelcomeRepository instance
      */
     @Provides
     @Singleton
     fun provideWelcomeRepository(
-        @ApplicationContext context: Context
+        apiService: WelcomeApiService
     ): WelcomeRepository {
-        return WelcomeRepositoryImpl(context)
+        return WelcomeRepositoryApiImpl(apiService)
     }
 }

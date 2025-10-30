@@ -238,7 +238,7 @@ class WelcomeScreenStateComponentsTest {
         // Given - Multiple page indicators
         composeTestRule.setContent {
             AeonwalletcursorTheme {
-                androidx.compose.foundation.layout.Column {
+                Column {
                     PageIndicators(pageCount = 3, currentPage = 0)
                     PageIndicators(pageCount = 5, currentPage = 2)
                     PageIndicators(pageCount = 7, currentPage = 6)
