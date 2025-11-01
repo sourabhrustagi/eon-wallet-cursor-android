@@ -66,6 +66,21 @@
     <string name="sign_in">Sign In</string>
     <string name="apply_for_loan_card">Apply for Loan/Card</string>
     
+    <!-- Login Screen -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_subtitle">Sign in to continue to your account</string>
+    <string name="login_email_or_phone">Email or Phone</string>
+    <string name="login_email_or_phone_hint">Enter your email or phone number</string>
+    <string name="login_password">Password</string>
+    <string name="login_password_hint">Enter your password</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+    <string name="login_sign_up">Sign Up</string>
+    <string name="login_success">Login successful!</string>
+    <string name="login_error_invalid_credentials">Invalid email or password</string>
+    <string name="login_error_network">Network error. Please check your connection.</string>
+    
     <string name="enter_id_title">Enter Your Details</string>
     <string name="enter_id_hint">Enter your ID</string>
     <string name="enter_card_number_hint">Enter card number</string>

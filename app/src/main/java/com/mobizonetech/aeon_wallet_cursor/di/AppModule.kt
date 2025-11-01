@@ -15,7 +15,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import com.mobizonetech.aeon_wallet_cursor.data.remote.api.PromotionsApiService
 import com.mobizonetech.aeon_wallet_cursor.data.repository.PromotionsRepositoryImpl
+import com.mobizonetech.aeon_wallet_cursor.data.repository.AuthRepositoryImpl
 import com.mobizonetech.aeon_wallet_cursor.domain.repository.PromotionsRepository
+import com.mobizonetech.aeon_wallet_cursor.domain.repository.AuthRepository
+import com.mobizonetech.aeon_wallet_cursor.data.remote.api.AuthApiService
 import com.mobizonetech.aeon_wallet_cursor.util.DispatcherProvider
 import com.mobizonetech.aeon_wallet_cursor.util.DefaultDispatcherProvider
 import androidx.datastore.core.DataStore
@@ -101,4 +104,13 @@ object AppModule {
     fun providePromotionsRepository(
         api: PromotionsApiService
     ): PromotionsRepository = PromotionsRepositoryImpl(api)
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        apiService: AuthApiService,
+        @ApplicationContext context: Context
+    ): AuthRepository {
+        return AuthRepositoryImpl(apiService, context)
+    }
 }

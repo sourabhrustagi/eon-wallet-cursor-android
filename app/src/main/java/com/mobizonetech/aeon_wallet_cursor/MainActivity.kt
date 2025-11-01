@@ -99,7 +99,7 @@ private fun MainActivityPreview() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    com.mobizonetech.aeon_wallet_cursor.presentation.navigation.AppNavigation()
+                    AppNavigation()
                 }
             }
 }

@@ -34,6 +34,11 @@ data class AnalyticsEvent(
         const val SETTINGS_LOADED = "settings_loaded"
         const val FEATURE_FLAG_EVALUATED = "feature_flag_evaluated"
         
+        // Login Events
+        const val LOGIN_ATTEMPTED = "login_attempted"
+        const val LOGIN_SUCCESS = "login_success"
+        const val LOGIN_FAILED = "login_failed"
+        
         // Parameter Keys
         const val PARAM_SCREEN_NAME = "screen_name"
         const val PARAM_SLIDE_INDEX = "slide_index"

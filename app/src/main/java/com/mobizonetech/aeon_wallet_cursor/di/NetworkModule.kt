@@ -16,6 +16,7 @@ import com.mobizonetech.aeon_wallet_cursor.data.network.NetworkMonitorImpl
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.mobizonetech.aeon_wallet_cursor.data.remote.api.PromotionsApiService
+import com.mobizonetech.aeon_wallet_cursor.data.remote.api.AuthApiService
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -112,6 +113,12 @@ object NetworkModule {
     @Singleton
     fun providePromotionsApiService(retrofit: Retrofit): PromotionsApiService {
         return retrofit.create(PromotionsApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
     }
 
     @Provides

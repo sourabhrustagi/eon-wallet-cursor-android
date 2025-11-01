@@ -34,7 +34,12 @@ fun AppNavigation(
             HomeScreen()
         }
         composable(Screen.Login.route) {
-            LoginScreen()
+            LoginScreen(
+                onLoginSuccess = { navController.navigate(Screen.Home.route) {
+                    // Clear back stack to prevent going back to login
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                } }
+            )
         }
     }
 }

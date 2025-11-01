@@ -37,6 +37,9 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
             path.contains("promotions") -> {
                 createMockResponse(chain, getMockPromotionsJson())
             }
+            path.contains("auth/login") -> {
+                createMockResponse(chain, getMockLoginJson())
+            }
             else -> {
                 // Pass through for unknown endpoints
                 chain.proceed(request)
@@ -183,6 +186,26 @@ class MockInterceptor(private val enabled: Boolean = true) : Interceptor {
               {"id":"p1","title":"Welcome Bonus","description":"Get 10% cashback","imageUrl":null,"validUntil":null},
               {"id":"p2","title":"Zero Fees","description":"No fees this week","imageUrl":null,"validUntil":null}
             ]}
+        """.trimIndent()
+    }
+
+    /**
+     * Mock JSON response for login
+     */
+    private fun getMockLoginJson(): String {
+        return """
+            {
+              "success": true,
+              "message": "Login successful",
+              "data": {
+                "id": "user_123",
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "phone": "+1234567890",
+                "token": "mock_jwt_token_12345",
+                "is_new_user": false
+              }
+            }
         """.trimIndent()
     }
 

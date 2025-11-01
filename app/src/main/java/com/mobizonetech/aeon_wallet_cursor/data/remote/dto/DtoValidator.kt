@@ -68,6 +68,27 @@ object DtoValidator {
     }
     
     /**
+     * Validate LoginResponseDto
+     */
+    fun validateLoginResponse(response: LoginResponseDto) {
+        if (!response.success) {
+            throw DataException.ValidationException(
+                response.message ?: "Login failed"
+            )
+        }
+        
+        require(response.data != null) {
+            "Login response data cannot be null"
+        }
+        
+        val user = response.data
+        require(user.id.isNotBlank()) { "User ID cannot be blank" }
+        require(user.name.isNotBlank()) { "User name cannot be blank" }
+        require(user.email.isNotBlank()) { "User email cannot be blank" }
+        require(user.token.isNotBlank()) { "User token cannot be blank" }
+    }
+    
+    /**
      * Simple URL validation
      */
     private fun isValidUrl(url: String): Boolean {
